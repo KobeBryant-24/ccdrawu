@@ -2,8 +2,8 @@
 
 <p align="center"><img src="docs/icon.svg" width="128" alt="ccdrawu icon" /></p>
 
-[![GitHub Release](https://img.shields.io/github/v/release/vulcanshen/ccdrawu)](https://github.com/vulcanshen/ccdrawu/releases)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/vulcanshen/ccdrawu)](https://go.dev/)
+[![GitHub Release](https://img.shields.io/github/v/release/KobeBryant-24/ccdrawu)](https://github.com/KobeBryant-24/ccdrawu/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/KobeBryant-24/ccdrawu)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 
 **Language**: English · [繁體中文](README-zh_TW.md)
@@ -11,6 +11,26 @@
 **A sidebar and a status line for Claude Code.** Usage limits, context, model, cost, git and session stats sit in a pane beside the transcript, so they no longer crowd the space under your prompt. Or, if you would rather have them under the prompt, in Claude Code's status line, laid out the way you pick.
 
 ![demo](docs/demo.gif)
+
+## This fork
+
+A local fork of [vulcanshen/ccdrawu](https://github.com/vulcanshen/ccdrawu), kept on
+`KobeBryant-24/ccdrawu`. Three differences from upstream v1.4.3:
+
+1. **A Chinese interface.** Every row and label in the drawer and the status line is in
+   Chinese. Upstream sizes its columns in characters, which is wrong for CJK text — a
+   Chinese character takes two columns — so the widths are computed in cells here.
+2. **MiniMax Coding Plan quota.** The `Session` (5-hour) and `Weekly` (7-day) rows show
+   MiniMax's Coding Plan limits when your `ANTHROPIC_BASE_URL` points at MiniMax: the
+   plugin asks `…/v1/api/openplatform/coding_plan/remains` and fills those two rows with
+   what is used and when they reset. The key and the address come from your settings; to
+   give them in the plugin's own options instead, run `/plugin configure ccdrawu`
+   (`minimax_api_key`, `minimax_base_url`).
+3. **The repository is the fork.** The Go module path, the release owner and the install
+   scripts point at `KobeBryant-24/ccdrawu`, and the versions read `1.4.3-cn.N` — the
+   upstream number plus `-cn.N`.
+
+Upstream's changes are merged in as they come; `SYNC.md` in the fork says how.
 
 ## What it shows
 
@@ -65,18 +85,18 @@ First the `ccdrawu` command:
 
 ```sh
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.sh | sh
 
 # Homebrew (macOS / Linux)
-brew install vulcanshen/tap/ccdrawu
+brew install KobeBryant-24/tap/ccdrawu
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.ps1 | iex
 
 # Scoop (Windows)
-scoop bucket add vulcanshen https://github.com/vulcanshen/scoop-bucket
+scoop bucket add KobeBryant-24 https://github.com/KobeBryant-24/scoop-bucket
 scoop install ccdrawu
 ```
 
@@ -85,6 +105,17 @@ Then add the drawer to Claude Code:
 ```sh
 ccdrawu install claude
 ```
+
+> **In this fork**, the install script and the Homebrew and Scoop taps need a GitHub
+> Release to download from, and there is none yet — the fork has the tag
+> `v1.4.3-cn.2` but no release assets. Until a release is published, install the
+> command straight from the source:
+>
+> ```sh
+> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.2
+> ```
+>
+> or clone the repository and run `make install` in it.
 
 It installs the ccdrawu plugin released with this `ccdrawu`, for your user, so every session has the drawer. Sessions already open take it with `/reload-plugins`. Then run `ccdrawu` to pick what the drawer shows, or to turn on the status line.
 
@@ -104,7 +135,7 @@ It looks up the latest release and updates the `ccdrawu` command the way you ins
 
 - Installed with Scoop, it tells you to run `scoop update ccdrawu`, then `ccdrawu install claude`: Scoop does not update ccdrawu while it runs.
 - Where it cannot write in the folder `ccdrawu` is in, such as `/usr/local/bin` after the install script ran as root, it says so and stops: run the install script again, or `ccdrawu update` as the folder's owner.
-- Up to 1.4.1, `ccdrawu update` can stop with `Looking up the latest release: … 403 Forbidden`: it asked GitHub's API, which answers 60 lookups an hour to everything on your network. Update the way you installed it instead (`brew upgrade vulcanshen/tap/ccdrawu`, `scoop update ccdrawu`, or the install script again), then run `ccdrawu install claude`; or try again within the hour. Later versions do not ask the API.
+- Up to 1.4.1, `ccdrawu update` can stop with `Looking up the latest release: … 403 Forbidden`: it asked GitHub's API, which answers 60 lookups an hour to everything on your network. Update the way you installed it instead (`brew upgrade KobeBryant-24/tap/ccdrawu`, `scoop update ccdrawu`, or the install script again), then run `ccdrawu install claude`; or try again within the hour. Later versions do not ask the API.
 - Before 0.1.3 there is no `ccdrawu update`: update the command the way you installed it (`brew upgrade ccdrawu`, `scoop update ccdrawu`, or the install script again), then run `ccdrawu install claude`, which updates the plugin to the version of the command.
 
 ### Uninstall
@@ -121,12 +152,12 @@ Then remove the `ccdrawu` command:
 
 ```sh
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.sh | sh
+curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.sh | sh
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.ps1 | iex
 ```
 
 Both ask before removing `~/.config/ccdrawu/` and ccdrawu's folder in the system's cache folder (see [Where it keeps things](#where-it-keeps-things)). With Homebrew or Scoop, `brew uninstall ccdrawu` or `scoop uninstall ccdrawu`.
@@ -134,7 +165,7 @@ Both ask before removing `~/.config/ccdrawu/` and ccdrawu's folder in the system
 ## Quick start
 
 ```sh
-brew install vulcanshen/tap/ccdrawu   # or another way, under Install
+brew install KobeBryant-24/tap/ccdrawu   # or another way, under Install
 ccdrawu install claude
 claude
 ```

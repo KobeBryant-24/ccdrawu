@@ -2,8 +2,8 @@
 
 <p align="center"><img src="docs/icon.svg" width="128" alt="ccdrawu icon" /></p>
 
-[![GitHub Release](https://img.shields.io/github/v/release/vulcanshen/ccdrawu)](https://github.com/vulcanshen/ccdrawu/releases)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/vulcanshen/ccdrawu)](https://go.dev/)
+[![GitHub Release](https://img.shields.io/github/v/release/KobeBryant-24/ccdrawu)](https://github.com/KobeBryant-24/ccdrawu/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/KobeBryant-24/ccdrawu)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 
 **語言**：[English](README.md) · 繁體中文
@@ -11,6 +11,23 @@
 **Claude Code 的側邊欄與狀態列。** 用量上限、context、模型、花費、git 和 session 統計都放在對話旁邊的面板裡，不再擠在輸入框下方。想放在輸入框下方的話，也可以當成 Claude Code 的狀態列，照你挑的方式排。
 
 ![demo](docs/demo.gif)
+
+## 這個 fork
+
+[vulcanshen/ccdrawu](https://github.com/vulcanshen/ccdrawu) 的本地 fork，放在
+`KobeBryant-24/ccdrawu`。跟上游 v1.4.3 有三處不同：
+
+1. **介面中文化。** 側欄與狀態列的每一行、每一個標籤都是中文。上游的欄寬是按「字元數」
+   算的，對 CJK 不對 —— 一個中文字佔兩個顯示欄 —— 這裡改成按「顯示欄位」算。
+2. **MiniMax Coding Plan 配額。** 當你的 `ANTHROPIC_BASE_URL` 指向 MiniMax 時，
+   `Session`（5 小時）與 `Weekly`（7 天）兩行會顯示 MiniMax 的 Coding Plan 額度：外掛會問
+   `…/v1/api/openplatform/coding_plan/remains`，把已用比例與重置倒數填進那兩行。金鑰與
+   網址取自你的 settings；想改在外掛自己的選項裡填，執行 `/plugin configure ccdrawu`
+   （`minimax_api_key`、`minimax_base_url`）。
+3. **倉庫指向這個 fork。** Go module 路徑、release 的 owner 與安裝腳本都指向
+   `KobeBryant-24/ccdrawu`，版本號是 `1.4.3-cn.N` —— 上游的版本號加上 `-cn.N`。
+
+上游的改動會陸續合進來；fork 裡的 `SYNC.md` 寫了怎麼合。
 
 ## 顯示的內容
 
@@ -65,18 +82,18 @@
 
 ```sh
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.sh | sh
 
 # Homebrew（macOS / Linux）
-brew install vulcanshen/tap/ccdrawu
+brew install KobeBryant-24/tap/ccdrawu
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.ps1 | iex
 
 # Scoop（Windows）
-scoop bucket add vulcanshen https://github.com/vulcanshen/scoop-bucket
+scoop bucket add KobeBryant-24 https://github.com/KobeBryant-24/scoop-bucket
 scoop install ccdrawu
 ```
 
@@ -85,6 +102,16 @@ scoop install ccdrawu
 ```sh
 ccdrawu install claude
 ```
+
+> **在這個 fork 裡**，安裝腳本與 Homebrew、Scoop tap 都需要有 GitHub Release 才能下載，
+> 而目前還沒有 —— fork 只有 `v1.4.3-cn.2` 這個 tag，沒有 release 資產。發布 release
+> 之前，直接從原始碼裝指令：
+>
+> ```sh
+> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.2
+> ```
+>
+> 或 clone 這個 repo，在裡面跑 `make install`。
 
 它會幫你的使用者裝好跟這個 `ccdrawu` 同一版發布的 ccdrawu 外掛，之後每個 session 都有側邊欄；已經開著的 session 跑一次 `/reload-plugins`。接著執行 `ccdrawu` 挑要顯示的項目，或打開狀態列。
 
@@ -104,7 +131,7 @@ ccdrawu update
 
 - 用 Scoop 裝的：它會告訴你先跑 `scoop update ccdrawu`，再跑 `ccdrawu install claude`。Scoop 不會在 ccdrawu 執行中更新它。
 - `ccdrawu` 所在的資料夾不能寫入時（例如安裝腳本用 root 裝在 `/usr/local/bin`），它會說明原因後停下來：請再跑一次安裝腳本，或用那個資料夾擁有者的身分執行 `ccdrawu update`。
-- 1.4.1 以前的 `ccdrawu update` 可能停在 `Looking up the latest release: … 403 Forbidden`：它問的是 GitHub 的 API，同一個網路每小時只能問 60 次，大家共用。這時請照你安裝的方式更新（`brew upgrade vulcanshen/tap/ccdrawu`、`scoop update ccdrawu`，或再跑一次安裝腳本），再執行 `ccdrawu install claude`；或過一小時再試。之後的版本不再問 API。
+- 1.4.1 以前的 `ccdrawu update` 可能停在 `Looking up the latest release: … 403 Forbidden`：它問的是 GitHub 的 API，同一個網路每小時只能問 60 次，大家共用。這時請照你安裝的方式更新（`brew upgrade KobeBryant-24/tap/ccdrawu`、`scoop update ccdrawu`，或再跑一次安裝腳本），再執行 `ccdrawu install claude`；或過一小時再試。之後的版本不再問 API。
 - 0.1.3 之前的版本沒有 `ccdrawu update`：先照你安裝的方式更新指令（`brew upgrade ccdrawu`、`scoop update ccdrawu`，或再跑一次安裝腳本），再執行 `ccdrawu install claude`，它會把外掛更新成跟指令同一版。
 
 ### 移除
@@ -121,12 +148,12 @@ ccdrawu uninstall claude
 
 ```sh
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.sh | sh
+curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.sh | sh
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.ps1 | iex
 ```
 
 兩者都會先問過你，才刪 `~/.config/ccdrawu/` 和系統快取資料夾裡的 ccdrawu（見[資料存放位置](#資料存放位置)）。用 Homebrew 或 Scoop 裝的，用 `brew uninstall ccdrawu` 或 `scoop uninstall ccdrawu`。
@@ -134,7 +161,7 @@ irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.ps1 | ie
 ## 快速開始
 
 ```sh
-brew install vulcanshen/tap/ccdrawu   # 或「安裝」裡的其他方式
+brew install KobeBryant-24/tap/ccdrawu   # 或「安裝」裡的其他方式
 ccdrawu install claude
 claude
 ```
