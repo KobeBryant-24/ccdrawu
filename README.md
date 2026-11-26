@@ -106,11 +106,11 @@ ccdrawu install claude
 
 > **In this fork**, the install script and the Homebrew and Scoop taps need a GitHub
 > Release to download from, and there is none yet — the fork has the tag
-> `v1.4.3-cn.3` but no release assets. Until a release is published, install the
+> `v1.4.3-cn.4` but no release assets. Until a release is published, install the
 > command straight from the source:
 >
 > ```sh
-> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.3
+> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.4
 > ```
 >
 > or clone the repository and run `make install` in it.

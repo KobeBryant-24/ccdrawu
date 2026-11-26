@@ -150,9 +150,14 @@ func (d *drawer) applyTheme() tea.Cmd {
 // squares, or a line for a terminal with no Nerd Font. No terminal says which
 // fonts it has, so each option shows its own bar, and one this terminal can't
 // draw shows as boxes.
+//
+// The squares are the Unicode block elements, not the Nerd Font glyphs (U+F445
+// and U+F51D, in the private use area): those two are in no font but a Nerd
+// Font, so in every other terminal they come out as empty boxes. U+2588 and
+// U+2591 are standard block elements, in every monospace font.
 func (d *drawer) barField() *terminu.Field {
 	options := []string{
-		"squares  " + strings.Repeat("\uF445", 4) + strings.Repeat("\uF51D", 4),
+		"squares  " + strings.Repeat("\u2588", 4) + strings.Repeat("\u2591", 4),
 		"line     " + strings.Repeat("━", 8),
 	}
 	f := &terminu.Field{Label: "Bar", Options: options}

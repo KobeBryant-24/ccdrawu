@@ -100,11 +100,11 @@ ccdrawu install claude
 ```
 
 > **在這個 fork 裡**，安裝腳本與 Homebrew、Scoop tap 都需要有 GitHub Release 才能下載，
-> 而目前還沒有 —— fork 只有 `v1.4.3-cn.3` 這個 tag，沒有 release 資產。發布 release
+> 而目前還沒有 —— fork 只有 `v1.4.3-cn.4` 這個 tag，沒有 release 資產。發布 release
 > 之前，直接從原始碼裝指令：
 >
 > ```sh
-> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.3
+> go install github.com/KobeBryant-24/ccdrawu/cmd/ccdrawu@v1.4.3-cn.4
 > ```
 >
 > 或 clone 這個 repo，在裡面跑 `make install`。

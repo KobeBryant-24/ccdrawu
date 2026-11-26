@@ -739,7 +739,7 @@ func TestBarIsSquaresUntilTheLineIsPicked(t *testing.T) {
 	if d.pages[rowPreferences].Current().Selected != 0 {
 		t.Fatal("the bar starts on the squares")
 	}
-	if text := frameText(d); !strings.Contains(text, "\uF445\uF445\uF445\uF445\uF51D") || !strings.Contains(text, "━━━━━━━━") {
+	if text := frameText(d); !strings.Contains(text, "\u2588\u2588\u2588\u2588\u2591") || !strings.Contains(text, "━━━━━━━━") {
 		t.Fatalf("the options do not show their bars:\n%s", text)
 	}
 	press(d, key("j"))

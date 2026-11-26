@@ -25,8 +25,13 @@ export function duration(ms: number): string {
 // the terminal borrows, apart from each other and from the rows above and below; or "line", for a
 // terminal with no Nerd Font, a box-drawing line every monospace font has, its parts told apart by
 // color
-export const SQUARE_FILL = '\u{F445}'
-export const SQUARE = '\u{F51D}'
+//
+// The squares are the Unicode block elements rather than the Nerd Font glyphs upstream uses
+// (U+F445 and U+F51D, in the private use area): those two are in no font but a Nerd Font, so in
+// every other terminal they come out as empty boxes. U+2588 and U+2591 are standard block
+// elements, in every monospace font, and still tell the filled part from the empty one.
+export const SQUARE_FILL = '\u{2588}'
+export const SQUARE = '\u{2591}'
 export const LINE = '━'
 export function bar(percent: number, width: number, style?: string): { filled: string; empty: string } {
   const [full, none] = style === 'line' ? [LINE, LINE] : [SQUARE_FILL, SQUARE]
