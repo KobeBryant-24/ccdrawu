@@ -48,9 +48,12 @@ checksum:
 changelog:
   disable: true
 
-# A tag with a pre-release part (v1.2.0-beta.1) makes a GitHub pre-release.
+# The versions here carry a pre-release part (1.4.3-cn.2), which GitHub would
+# mark as a pre-release — and `releases/latest`, which the install scripts and
+# `ccdrawu update` read, points at the newest stable release only. So this
+# fork's releases are published as stable.
 release:
-  prerelease: auto
+  prerelease: false
 
 # This fork has no Homebrew tap and no Scoop bucket: publishing to them
 # would fail, since those repositories do not exist. The GitHub Release
