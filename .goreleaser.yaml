@@ -48,7 +48,7 @@ checksum:
 changelog:
   disable: true
 
-# The versions here carry a pre-release part (1.4.3-cn.2), which GitHub would
+# The versions here carry a pre-release part (1.4.3-cn.3), which GitHub would
 # mark as a pre-release — and `releases/latest`, which the install scripts and
 # `ccdrawu update` read, points at the newest stable release only. So this
 # fork's releases are published as stable.

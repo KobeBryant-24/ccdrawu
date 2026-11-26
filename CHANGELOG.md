@@ -2,7 +2,7 @@
 
 Each release names the version of terminu design (tdp) it follows.
 
-## v1.4.3-cn.2 — tdp v1.3.5
+## v1.4.3-cn.3 — tdp v1.3.5
 
 The first release of this fork, `KobeBryant-24/ccdrawu`. It carries upstream v1.4.3 and adds:
 

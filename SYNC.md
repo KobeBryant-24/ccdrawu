@@ -70,21 +70,21 @@ label 一律 ≤4 个汉字（8 显示列，正好塞进上游的 `LABEL = 9` �
 | `go.mod` 的 `module` | `github.com/KobeBryant-24/ccdrawu` | 否则 `go install github.com/vulcanshen/ccdrawu/cmd/ccdrawu@latest` 装的是上游的 |
 | `internal/claude/claude.go` 的 `Repo` | `https://github.com/KobeBryant-24/ccdrawu.git` | 插件从哪儿来 |
 | `cmd/ccdrawu/main.go` 的 `selfUpdate()` | `Owner` / `Tap` → `KobeBryant-24` | 否则 `ccdrawu update` 去查**上游**的 release，不是你的 fork |
-| `.claude-plugin/plugin.json` 的 `version` | `1.4.3-cn.2` | 抽屉里 "ccdrawu" 那行显示的版本（mod 读的就是这个文件）|
+| `.claude-plugin/plugin.json` 的 `version` | `1.4.3-cn.3` | 抽屉里 "ccdrawu" 那行显示的版本（mod 读的就是这个文件）|
 | `install.ps1` / `install.sh` / `uninstall.*` / `.goreleaser.yaml` | 仓库地址 | 让发布与安装脚本指向 fork |
 
 `plugin.json` 的 `author` 保留 `vulcanshen`（GPL 的归属权给原作者），`repository` 指向 fork。
 
-**版本号方案**：`1.4.3-cn.2` = 上游 `1.4.3` + fork 后缀 `-cn.2`。
+**版本号方案**：`1.4.3-cn.3` = 上游 `1.4.3` + fork 后缀 `-cn.2`。
 下次升上游版本时，fork 后缀也跟着加一（`-cn.3`），并打同名 tag。
 Go 二进制的版本号由构建参数注入（源码里默认 `dev`，和上游一致）：
 
 ```
-go build -trimpath -ldflags "-s -w -X github.com/KobeBryant-24/ccdrawu/internal/version.Version=1.4.3-cn.2" ...
+go build -trimpath -ldflags "-s -w -X github.com/KobeBryant-24/ccdrawu/internal/version.Version=1.4.3-cn.3" ...
 ```
 
-`SourceFrom()` 会把市场源拼成 `Repo#v<版本>`，也就是 `...ccdrawu.git#v1.4.3-cn.2` ——
-**所以 GitHub 上要有 `v1.4.3-cn.2` 这个 tag**，否则 `ccdrawu install claude` 会拉不到。
+`SourceFrom()` 会把市场源拼成 `Repo#v<版本>`，也就是 `...ccdrawu.git#v1.4.3-cn.3` ——
+**所以 GitHub 上要有 `v1.4.3-cn.3` 这个 tag**，否则 `ccdrawu install claude` 会拉不到。
 
 ---
 
@@ -151,8 +151,8 @@ ccdrawu@ccdrawu-cn   Read from: E:\CodeHub\ccdrawu-cn   ✔ enabled
 `git-credential-manager.exe` 在 `D:\Git\mingw64\bin\`），首次推送会弹浏览器登录。
 也可以用 TortoiseGit 的 Push 对话框。
 
-**要打的 tag**：`v1.4.3-cn.2`（版本号去掉 v 就是 `1.4.3-cn.2`）。
-`SourceFrom()` 拼的是 `Repo#v1.4.3-cn.2`，tag 不存在的话 `ccdrawu install claude` 会拉不到。
+**要打的 tag**：`v1.4.3-cn.3`（版本号去掉 v 就是 `1.4.3-cn.3`）。
+`SourceFrom()` 拼的是 `Repo#v1.4.3-cn.3`，tag 不存在的话 `ccdrawu install claude` 会拉不到。
 
 ---
 
