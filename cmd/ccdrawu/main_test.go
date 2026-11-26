@@ -230,7 +230,7 @@ func TestDoctorSetsRightWhatDoesNotFit(t *testing.T) {
 	want := "ccdrawu: 1 value and 1 entry in config.yaml did not fit: defaults used and entries taken out, yours kept in config.yaml.bak\n" +
 		"ccdrawu: config.yaml: dock \"account\" did not fit; taken out\n" +
 		"ccdrawu: config.yaml: bar \"wavy\" did not fit; using \"squares\"\n" +
-		"ccdrawu: Not read: refesh in " + loc.ConfigFile + "; delete it if you don't need it\n"
+		"ccdrawu: Not read: refesh in " + config.ShortHome(loc.ConfigFile) + "; delete it if you don't need it\n"
 	if errs.String() != want || out.Len() != 0 {
 		t.Fatalf("stderr:\n%s\nwant:\n%s\nstdout %q", errs.String(), want, out.String())
 	}
@@ -247,7 +247,7 @@ func TestDoctorSetsRightWhatDoesNotFit(t *testing.T) {
 
 	out.Reset()
 	errs.Reset()
-	if status := doctor(loc, &out, &errs); status != 0 || out.String() != "Nothing to set right in "+loc.ConfigFile+".\n" {
+	if status := doctor(loc, &out, &errs); status != 0 || out.String() != "Nothing to set right in "+config.ShortHome(loc.ConfigFile)+".\n" {
 		t.Fatalf("again: exit %d, stdout %q", status, out.String())
 	}
 	if bak, _ := filepath.Glob(loc.ConfigFile + ".bak.*"); len(bak) != 0 {

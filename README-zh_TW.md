@@ -83,19 +83,15 @@
 ```sh
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.sh | sh
-
-# Homebrew（macOS / Linux）
-brew install KobeBryant-24/tap/ccdrawu
 ```
 
 ```powershell
 # Windows PowerShell
 irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.ps1 | iex
-
-# Scoop（Windows）
-scoop bucket add KobeBryant-24 https://github.com/KobeBryant-24/scoop-bucket
-scoop install ccdrawu
 ```
+
+> 這個 fork 沒有 Homebrew tap、也沒有 Scoop bucket，所以沒有 `brew install` 或
+> `scoop install` 可用。上面那兩個安裝腳本才是路徑。
 
 再把側邊欄加進 Claude Code：
 

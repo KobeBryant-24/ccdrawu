@@ -2,6 +2,15 @@
 
 Each release names the version of terminu design (tdp) it follows.
 
+## v1.4.3-cn.2 — tdp v1.3.5
+
+The first release of this fork, `KobeBryant-24/ccdrawu`. It carries upstream v1.4.3 and adds:
+
+- A Chinese interface: every row and label in the drawer and the status line is in Chinese. Upstream sizes its columns in characters, which is wrong for CJK text — a Chinese character takes two columns — so the widths are computed in cells here.
+- MiniMax Coding Plan quota: the `Session` (5-hour) and `Weekly` (7-day) rows show MiniMax's Coding Plan limits when `ANTHROPIC_BASE_URL` points at MiniMax. The plugin asks `…/v1/api/openplatform/coding_plan/remains` and fills those two rows with what is used and when they reset. The key and the address come from your settings, or from the plugin's own options (`/plugin configure ccdrawu`).
+- The Go module path, the release owner and the install scripts point at this fork, and the versions read `1.4.3-cn.N`.
+- A fix the upstream test needed on Windows: the paths it compares were the raw ones, while the code shortens the home folder to `~`, which on Windows happens for the temporary folder too.
+
 ## v1.4.3 — tdp v1.3.5
 
 - The watcher Claude Code keeps on the comments of an Artifact the session published is no longer taken for a monitor: it drew an owl, and Tasks read `1 monitor`, while no monitor ran. Only a monitor the Monitor tool started counts, as in Claude Code's own count of work running.

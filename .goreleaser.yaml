@@ -52,44 +52,7 @@ changelog:
 release:
   prerelease: auto
 
-# A formula, not a cask: a formula binary is never stamped
-# com.apple.quarantine, so an unsigned binary runs clean.
-brews:
-  - repository:
-      owner: KobeBryant-24
-      name: homebrew-tap
-      # One token for everything, GITHUB_TOKEN (user, 2026-09-25): a release
-      # run by hand takes the shell's; the workflow hands it the PAT in
-      # ACTION_TOKEN when one is set, since the built-in token cannot write
-      # to the tap repository.
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    # A pre-release never reaches the tap: brew keeps the stable release.
-    skip_upload: auto
-    homepage: "https://github.com/KobeBryant-24/ccdrawu"
-    # app: one line, what the app is, ending in (terminu family).
-    description: "ccdrawu: a status drawer for Claude Code — usage limits, context, model, cost and git beside the transcript (terminu family)"
-    # app: what to run first, where the settings and data live, the Nerd
-    # Font and truecolor requirements, the platforms.
-    caveats: |
-      `ccdrawu install claude` adds the drawer to Claude Code (its ccdrawu
-      plugin); `ccdrawu` then picks what it shows, and every open session
-      follows within a second. Before `brew uninstall ccdrawu`, run
-      `ccdrawu uninstall claude` to take the drawer out again.
-
-      Settings live in ~/.config/ccdrawu/config.yaml, what the drawer
-      writes for ccdrawu in ~/Library/Caches/ccdrawu (~/.cache/ccdrawu on
-      Linux). A Nerd Font terminal profile and a truecolor (24-bit)
-      terminal are required. macOS and Linux (WSL too); on Windows, Scoop.
-    # app: dependencies, when the app calls other programs.
-    test: |
-      system "#{bin}/ccdrawu", "version"
-
-scoops:   # Windows
-  - repository:
-      owner: KobeBryant-24
-      name: scoop-bucket
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    skip_upload: auto
-    homepage: "https://github.com/KobeBryant-24/ccdrawu"
-    # app: the same line as the brews description above.
-    description: "ccdrawu: a status drawer for Claude Code — usage limits, context, model, cost and git beside the transcript (terminu family)"
+# This fork has no Homebrew tap and no Scoop bucket: publishing to them
+# would fail, since those repositories do not exist. The GitHub Release
+# itself — the archives and the checksums the install scripts read — is
+# what matters here.

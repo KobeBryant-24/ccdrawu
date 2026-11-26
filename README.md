@@ -87,18 +87,16 @@ First the `ccdrawu` command:
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.sh | sh
 
-# Homebrew (macOS / Linux)
-brew install KobeBryant-24/tap/ccdrawu
 ```
 
 ```powershell
 # Windows PowerShell
 irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.ps1 | iex
 
-# Scoop (Windows)
-scoop bucket add KobeBryant-24 https://github.com/KobeBryant-24/scoop-bucket
-scoop install ccdrawu
 ```
+
+> This fork ships no Homebrew tap and no Scoop bucket, so there is nothing to
+> `brew install` or `scoop install` from. The install scripts above are the way in.
 
 Then add the drawer to Claude Code:
 
