@@ -106,20 +106,27 @@ ccdrawu-cn/
 这个目录**本身就是一个插件市场**，注册在 settings.json 的 `extraKnownMarketplaces` 里：
 
 ```json
-"ccdrawu-cn": { "source": { "source": "directory", "path": "E:\\CodeHub\\ccdrawu-cn" } }
+"ccdrawu": { "source": { "source": "directory", "path": "E:\CodeHub\ccdrawu-cn" } }
 ```
 
 Claude Code 的插件列表里会显示：
 
 ```
-ccdrawu@ccdrawu-cn   Read from: E:\CodeHub\ccdrawu-cn   ✔ enabled
+ccdrawu@ccdrawu   Read from: E:\CodeHub\ccdrawu-cn   ✔ enabled
 ```
 
 **`Read from` 就是原地加载** —— Claude Code 直接跑这个目录里的 `hooks/register.tsx`，
 不读 `plugins\cache\` 里的副本。所以：
 
 - 改完这个目录里的代码 → Claude Code 里 `/reload-plugins` → **立刻生效**，没有复制步骤
-- 上游那个 GitHub 版（`ccdrawu@ccdrawu`）已禁用，避免两个 mod 抢 `/ccdrawu` 命令
+- 不用 commit、不用 push、不用打 tag、不用重装插件
+
+`CCDRAWU__MARKETPLACE` 要指到同一个目录（`E:\CodeHub\ccdrawu-cn`），否则
+`ccdrawu install claude` 会发现市场指向别处而把它换掉。
+
+README 里也写了另一种配法：把市场指到仓库的 `url#latest`（一个由 release workflow
+移到最新 release 上的 tag），这样 `claude plugin marketplace update` +
+`claude plugin update` 就跟着 release 走。两种配法不能同时用，市场只有一个 source。
 
 ---
 

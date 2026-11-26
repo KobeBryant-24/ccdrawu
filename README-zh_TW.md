@@ -113,6 +113,46 @@ ccdrawu install claude
 
 外掛請只用 `ccdrawu install claude`，或會幫你執行它的 `ccdrawu update`，來安裝和更新，不要在 Claude Code 裡用 `/plugin`，也不要用 `claude plugin marketplace`。自己從 marketplace 裝的外掛，是 repo main 分支上當下的版本，可能比你的 `ccdrawu` 新，讀設定的方式也可能不一樣；`ccdrawu install claude` 會裝跟指令同一版的外掛。
 
+### 讓 Claude Code 指向這個 fork
+
+外掛從哪裡來，是名為 `ccdrawu` 的 marketplace 的選擇，由 Claude Code 自己的指令設定。
+有兩種配法，各有用途：
+
+**A. 工作副本 —— 開發時用這個**
+
+```sh
+claude plugin marketplace remove ccdrawu
+claude plugin marketplace add "/path/to/ccdrawu-cn"
+claude plugin install ccdrawu@ccdrawu
+```
+
+Claude Code 直接讀那個資料夾裡的外掛，所以改完跑一次 `/reload-plugins` 就生效 ——
+不用 commit、不用發 release、不用重裝。把 `CCDRAWU__MARKETPLACE` 指到同一個資料夾，
+不然 `ccdrawu install claude` 會發現 marketplace 指向別處而把它換掉：
+
+```sh
+export CCDRAWU__MARKETPLACE="/path/to/ccdrawu-cn"
+```
+
+**B. 倉庫 —— 跟著 release 走用這個**
+
+```sh
+claude plugin marketplace remove ccdrawu
+claude plugin marketplace add "https://github.com/KobeBryant-24/ccdrawu.git#latest"
+claude plugin install ccdrawu@ccdrawu
+export CCDRAWU__MARKETPLACE="https://github.com/KobeBryant-24/ccdrawu.git#latest"
+```
+
+`latest` 這個 tag 由 release workflow 移到最新的那個 release 上，所以這樣就跟著 release 走：
+
+```sh
+claude plugin marketplace update ccdrawu
+claude plugin update ccdrawu
+```
+
+用分支也行，跟 `latest` 一樣：`#main` 跟的是最新的 commit 而不是最新的 release ——
+改外掛的時候用這個。
+
 ### 第一次執行
 
 下一個 Claude Code 的 session 會自己打開側邊欄：Claude Code 是 fullscreen 渲染、終端機也夠寬時放在對話旁邊，其他時候放在輸入框上方。外掛第一次跑的時候，會寫出 `ccdrawu` 列出的項目清單；在那之前，`ccdrawu` 的頁面會寫還沒有東西可以列，並提示在 **preferences** 的 **Plugin** 上按 `Enter` 安裝外掛。

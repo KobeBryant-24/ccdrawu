@@ -119,6 +119,48 @@ It installs the ccdrawu plugin released with this `ccdrawu`, for your user, so e
 
 Install and update the plugin with `ccdrawu install claude`, or `ccdrawu update`, which runs it, only, not with `/plugin` in Claude Code or `claude plugin marketplace`. Added from the marketplace by hand, the plugin is whatever the repository's main branch holds, which can be ahead of your `ccdrawu` and read its settings differently; `ccdrawu install claude` takes the plugin of the same version as the command.
 
+### Pointing Claude Code at this fork
+
+Where the plugin comes from is a choice of the marketplace `ccdrawu`, and Claude
+Code's own commands set it. Two ways, for two purposes:
+
+**A. The working copy — the one to develop with**
+
+```sh
+claude plugin marketplace remove ccdrawu
+claude plugin marketplace add "/path/to/ccdrawu-cn"
+claude plugin install ccdrawu@ccdrawu
+```
+
+Claude Code reads the plugin out of that folder, so an edit is live after
+`/reload-plugins` — no commit, no release, no reinstalling. Point
+`CCDRAWU__MARKETPLACE` at the same folder, or `ccdrawu install claude` will
+find the marketplace pointing somewhere else and replace it:
+
+```sh
+export CCDRAWU__MARKETPLACE="/path/to/ccdrawu-cn"
+```
+
+**B. The repository — the one to follow the releases with**
+
+```sh
+claude plugin marketplace remove ccdrawu
+claude plugin marketplace add "https://github.com/KobeBryant-24/ccdrawu.git#latest"
+claude plugin install ccdrawu@ccdrawu
+export CCDRAWU__MARKETPLACE="https://github.com/KobeBryant-24/ccdrawu.git#latest"
+```
+
+The `latest` tag is moved to the newest release by the release workflow, so
+this follows the releases:
+
+```sh
+claude plugin marketplace update ccdrawu
+claude plugin update ccdrawu
+```
+
+A branch works as well as `latest`: `#main` follows the newest commit instead
+of the newest release, which is the one to use while you work on the plugin.
+
 ### The first run
 
 The next Claude Code session opens the drawer by itself, beside the transcript where Claude Code renders fullscreen in a terminal wide enough, above the prompt otherwise. The plugin writes the list of items `ccdrawu` offers the first time it runs; until then the pages of `ccdrawu` say there is nothing to list yet, and that `Enter` on **Plugin** in **preferences** installs the plugin.
