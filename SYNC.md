@@ -69,21 +69,38 @@ label 一律 ≤4 个汉字（8 显示列，正好塞进上游的 `LABEL = 9` �
 
 ```
 ccdrawu-cn/
-├── .claude-plugin/plugin.json   ← 改过（userConfig）
-├── hooks/                       ← 改过（items.ts / layout.ts / register.tsx）
-├── types/                       ← 原样
-├── cmd/  internal/              ← 原样（Go 端，没动）
-├── deploy.cmd                   ← 部署脚本（见下）
-└── SYNC.md                      ← 本文件
+├── .claude-plugin/
+│   ├── plugin.json        ← 改过（userConfig）
+│   └── marketplace.json   ← 改过（市场名改成 ccdrawu-cn，避开和上游撞名）
+├── hooks/                 ← 改过（items.ts / layout.ts / register.tsx）
+├── types/                 ← 原样
+├── cmd/  internal/        ← 原样（Go 端，没动）
+└── SYNC.md                ← 本文件
 ```
 
-**`deploy.cmd`**：按 `CLAUDE_CONFIG_DIR`（没有就用 `%USERPROFILE%\.claude`）找到
-`plugins\cache\ccdrawu\ccdrawu\1.4.2`，覆盖 `hooks/`、`types/` 和 `.claude-plugin/plugin.json`。
-跑完到 Claude Code 里执行 `/reload-plugins`。双击也能跑。
+## 三、它是怎么被装上的（不用复制文件）
+
+这个目录**本身就是一个插件市场**，注册在 settings.json 的 `extraKnownMarketplaces` 里：
+
+```json
+"ccdrawu-cn": { "source": { "source": "directory", "path": "E:\\CodeHub\\ccdrawu-cn" } }
+```
+
+Claude Code 的插件列表里会显示：
+
+```
+ccdrawu@ccdrawu-cn   Read from: E:\CodeHub\ccdrawu-cn   ✔ enabled
+```
+
+**`Read from` 就是原地加载** —— Claude Code 直接跑这个目录里的 `hooks/register.tsx`，
+不读 `plugins\cache\` 里的副本。所以：
+
+- 改完这个目录里的代码 → Claude Code 里 `/reload-plugins` → **立刻生效**，没有复制步骤
+- 上游那个 GitHub 版（`ccdrawu@ccdrawu`）已禁用，避免两个 mod 抢 `/ccdrawu` 命令
 
 ---
 
-## 三、上游更新后怎么同步（描述，具体操作你定）
+## 四、上游更新后怎么同步（描述，具体操作你定）
 
 1. 从 `upstream` remote 拉取上游的新 tag
 2. 基于新 tag 开一个分支
@@ -98,11 +115,11 @@ ccdrawu-cn/
 | `.claude-plugin/plugin.json` | 上游若也加了 `userConfig`，把两项合并进去，别覆盖掉 |
 
 5. 推到你自己的 fork（`origin`）
-6. 跑 `deploy.cmd` 部署，再 `/reload-plugins`
+6. Claude Code 里 `/reload-plugins`
 
 ---
 
-## 四、remote 现状
+## 五、remote 现状
 
 - `upstream` → `https://github.com/vulcanshen/ccdrawu.git` ✓ 已设好
 - `origin` → **还没设**。需要你在 GitHub 网页上 fork 上游（<https://github.com/vulcanshen/ccdrawu> → Fork 按钮），
@@ -114,7 +131,7 @@ ccdrawu-cn/
 
 ---
 
-## 五、注意
+## 六、注意
 
 **别对已安装的插件直接跑 `ccdrawu install claude` 或 `claude plugin update ccdrawu`** ——
 那会从 git ref v1.4.2 重新拉取，把这三处改动全覆盖掉（manifest 的 `userConfig` 也没了）。
