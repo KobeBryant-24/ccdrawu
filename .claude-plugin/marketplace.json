@@ -1,6 +1,6 @@
 {
-  "name": "ccdrawu-cn",
-  "description": "ccdrawu-cn: a local fork of ccdrawu with a Chinese interface and MiniMax Coding Plan quota",
+  "name": "ccdrawu",
+  "description": "ccdrawu: a sidebar and a status line for Claude Code. Fork of vulcanshen/ccdrawu with a Chinese interface and MiniMax Coding Plan quota.",
   "owner": { "name": "KobeBryant-24" },
   "plugins": [{ "name": "ccdrawu", "source": "./" }]
 }
