@@ -7,6 +7,7 @@ import type {
   Config,
   GitInfo,
   Kit,
+  Limit,
   ModelInfo,
   Modes,
   ServiceStatus,
@@ -61,6 +62,7 @@ import {
 } from './format'
 import { C, ITEMS, view, type Seg, type Snapshot, type View } from './items'
 import {
+  cellWidth,
   chunk,
   COLUMN_GAP,
   columnRows,
@@ -70,6 +72,7 @@ import {
   enabledItems,
   inlineValue,
   type Manual,
+  padEndCells,
   parseConfig,
   unreadReason,
   configMisfits,
@@ -110,14 +113,98 @@ const config = atom({ plugin: 'ccdrawu', key: 'config' } as const, {} as Config)
 // Kept by the host, so a reload keeps what /ccdrawu set
 const manual = atom({ plugin: 'ccdrawu', key: 'manual' } as const, null as Manual)
 
+// MiniMax Coding Plan 的 5 小时窗口与周窗口配额。第三方 API 下 Claude 官方的限额是空的，所以把它
+// 填进那两格：语义一样（一段窗口内已用多少、多久重置），位置也一样，抽屉不用加新的行
+type MmRemain = {
+  model_name: string
+  current_interval_remaining_percent: number
+  current_weekly_remaining_percent: number
+  end_time: number
+  weekly_end_time: number
+}
+
+// 插件自己的设置：manifest 的 userConfig 里声明的，Claude Code 在启用插件时问用户要，register 时交过来。
+// 用户填了就用它；没填就用 settings 里发请求那把（同一个服务商的同一把 key）
+let minimaxKey = ''
+let minimaxBase = ''
+
+// 取一次用一阵：每轮都问太吵，MiniMax 的额度自己也算请求
+let mmCache: { at: number; limits: Limit[] } | undefined
+const MM_TTL = 5 * 60_000
+
+// MiniMax 的 5 小时窗口与周窗口配额。第三方 API 下 Claude 官方的限额是空的，所以把它填进那两格：
+// 语义一样（一段窗口内已用多少、多久重置），位置也一样，抽屉不用加新的行
+async function minimaxLimits($: Engine): Promise<Limit[] | undefined> {
+  // settings 的 env 里就是发请求用的那把 key（ANTHROPIC_AUTH_TOKEN）和端点地址（ANTHROPIC_BASE_URL）：
+  // 同一个服务商的同一把凭证，直接用，不必再填一遍。读的是 Claude Code 已经加载好的那份 settings，
+  // 不是自己去开某个文件（refreshModelName 取 effort level 也是这么读的）
+  const env = (await $.settings.read({ key: 'env' }).catch(() => undefined)) as
+    | Record<string, string>
+    | undefined
+  const key = minimaxKey !== '' ? minimaxKey : (env?.ANTHROPIC_AUTH_TOKEN ?? '')
+  if (key === '') return undefined
+  // 地址：用户填的优先；没填就用 ANTHROPIC_BASE_URL 推（国内站与国际站都对）
+  const base = minimaxBase !== '' ? minimaxBase : (env?.ANTHROPIC_BASE_URL ?? '')
+  if (base === '') return undefined
+  // 看的是主机名，不是整条地址：中转服务的路径里也可能带 minimax，那不是 MiniMax 自己的接口
+  let url: URL
+  try {
+    url = new URL(base)
+  } catch {
+    return undefined
+  }
+  if (!/minimax/i.test(url.hostname)) return undefined
+  const now = await $.clock.now()
+  if (mmCache !== undefined && now - mmCache.at < MM_TTL) return mmCache.limits
+  // origin 只留协议和主机，路径（/anthropic 之类）丢掉
+  const res = await $.http
+    .fetch(`${url.origin}/v1/api/openplatform/coding_plan/remains`, {
+      headers: { Authorization: `Bearer ${key}` },
+    })
+    .catch(() => undefined)
+  if (res === undefined || !res.ok) return undefined
+  let body: { model_remains?: MmRemain[] }
+  try {
+    body = JSON.parse(res.text) as { model_remains?: MmRemain[] }
+  } catch {
+    return undefined
+  }
+  // general 是 Claude 用的那个模型；video 的次数配额是另一回事，不混进来
+  const g = body.model_remains?.find(m => m.model_name === 'general')
+  if (g === undefined) return undefined
+  const limits: Limit[] = [
+    {
+      kind: 'five_hour',
+      percentUsed: 100 - g.current_interval_remaining_percent,
+      resetsAt: new Date(g.end_time).toISOString(),
+    },
+    {
+      kind: 'seven_day',
+      percentUsed: 100 - g.current_weekly_remaining_percent,
+      resetsAt: new Date(g.weekly_end_time).toISOString(),
+    },
+  ]
+  mmCache = { at: now, limits }
+  return limits
+}
+
+// 上一份取到的第三方限额：请求失败时留着它，抽屉不至于从数字跳回空白
+let thirdPartyLimits: Limit[] | undefined
+
 async function refreshUsage($: Engine) {
   const u = await $.session.usage()
+  const mm = await minimaxLimits($)
+  if (mm !== undefined) thirdPartyLimits = mm
+  const own = u.rateLimits.map(l => ({ kind: l.kind, percentUsed: l.percentUsed, resetsAt: l.resetsAt }))
+  const tp = thirdPartyLimits
+  // 第三方那两格优先：官方的限额在第三方 API 下是空的
+  const limits = tp === undefined ? own : [...own.filter(l => !tp.some(t => t.kind === l.kind)), ...tp]
   await update($, usage, () => ({
     startedAt: u.startedAt,
     contextPercent: u.context.percent,
     contextTokens: u.context.tokens,
     contextWindow: u.context.window,
-    limits: u.rateLimits.map(l => ({ kind: l.kind, percentUsed: l.percentUsed, resetsAt: l.resetsAt })),
+    limits,
     costUsd: u.cost?.usd,
   }))
 }
@@ -527,7 +614,13 @@ async function startSession($: Engine) {
   quietly(refreshSession($))
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  // The plugin's own settings, from the manifest's userConfig: the API key for the third party's quota
+  // (sensitive, so it lives in the platform's secure store) and where to ask
+  const cfg = (options ?? {}) as Record<string, string | undefined>
+  minimaxKey = cfg.minimax_api_key ?? ''
+  minimaxBase = cfg.minimax_base_url ?? ''
+
   on('session.start', async ($, e, next) => {
     // The alias follows once the config is read
     await registerCommands(spec => $.command.register(spec), commands, undefined)
@@ -789,12 +882,12 @@ export const register: Register = on => {
         return { label: item.label, value, width: segWidth(value) }
       })
       const rows = columnRows(
-        cells.map(c => ({ label: c.label.length, value: c.width })),
+        cells.map(c => ({ label: cellWidth(c.label), value: c.width })),
         inner - petWidth,
       )
       const columns = chunk(cells, rows).map(list => ({
         list,
-        label: Math.max(...list.map(c => c.label.length)) + 1,
+        label: Math.max(...list.map(c => cellWidth(c.label))) + 1,
         value: Math.max(...list.map(c => c.width)),
       }))
       const lines = Array.from({ length: Math.min(rows, cells.length) }, (_, r) => (
@@ -804,7 +897,7 @@ export const register: Register = on => {
             if (cell === undefined) return []
             const isLast = i === columns.length - 1
             return [
-              <Text color={C.blue}>{cell.label.padEnd(col.label)}</Text>,
+              <Text color={C.blue}>{padEndCells(cell.label, col.label)}</Text>,
               ...segs(cell.value),
               ...(isLast ? [] : [<Text>{' '.repeat(col.value - cell.width)}</Text>, <Text color={C.surface}>{COLUMN_GAP}</Text>]),
             ]
@@ -827,13 +920,13 @@ export const register: Register = on => {
     }
 
     // Beside the transcript: a key column and bars for meters, one row after another
-    const keyWidth = Math.max(LABEL, ...shown.map(({ item }) => item.label.length + 1))
+    const keyWidth = Math.max(LABEL, ...shown.map(({ item }) => cellWidth(item.label) + 1))
     const barWidth = Math.max(4, inner - keyWidth - 5)
     // The key keeps its width: a value too long for the row (a path) would squeeze it, and its padding
     // would wrap to an empty second row
     const label = (text: string) => (
       <Box flexShrink={0}>
-        <Text color={C.blue}>{text.padEnd(keyWidth)}</Text>
+        <Text color={C.blue}>{padEndCells(text, keyWidth)}</Text>
       </Box>
     )
     const dockRow = (key: string, v: View) => {

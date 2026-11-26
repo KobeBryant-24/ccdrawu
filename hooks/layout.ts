@@ -197,6 +197,13 @@ export function segWidth(segs: readonly Seg[]): number {
   return segs.reduce((n, s) => n + cellWidth(s.text), 0)
 }
 
+// Pad to a width in cells, not in characters: a CJK character takes two cells, so String.padEnd would
+// leave the line short and the columns beside the transcript would not line up
+export function padEndCells(text: string, width: number): string {
+  const w = cellWidth(text)
+  return w >= width ? text : text + ' '.repeat(width - w)
+}
+
 // Above the prompt the items fill columns top to bottom, side by side: the fewest rows whose columns
 // fit in `width`, each column a key (its longest plus a space) and a value; one column when none fit
 export function columnRows(cells: readonly { label: number; value: number }[], width: number): number {

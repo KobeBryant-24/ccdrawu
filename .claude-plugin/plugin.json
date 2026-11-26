@@ -5,5 +5,20 @@
   "author": { "name": "vulcanshen" },
   "repository": "https://github.com/vulcanshen/ccdrawu",
   "license": "GPL-3.0",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "minimax_api_key": {
+      "type": "string",
+      "title": "MiniMax API Key",
+      "description": "查询 MiniMax Coding Plan 的 5 小时 / 周配额用。填了就显示在抽屉的 5小时 / 7天 两行，留空则不显示第三方配额。",
+      "sensitive": true,
+      "required": false
+    },
+    "minimax_base_url": {
+      "type": "string",
+      "title": "MiniMax API 地址",
+      "description": "留空则用 settings 里 ANTHROPIC_BASE_URL 的地址（国内站与国际站都对）。要指定就填：国内站 https://api.minimaxi.com，国际站 https://api.minimax.io",
+      "required": false
+    }
+  }
 }
