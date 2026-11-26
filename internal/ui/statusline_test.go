@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 )
 
 // toStatusline goes into the statusline page, on the first field: its on and

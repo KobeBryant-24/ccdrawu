@@ -3,7 +3,7 @@ package ui
 import (
 	_ "embed"
 
-	"github.com/vulcanshen/ccdrawu/internal/version"
+	"github.com/KobeBryant-24/ccdrawu/internal/version"
 	terminu "github.com/vulcanshen/terminu-go"
 )
 

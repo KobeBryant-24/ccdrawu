@@ -16,7 +16,7 @@ import (
 // over HTTPS (owner/repo clones over SSH, which needs a key on GitHub).
 const (
 	Plugin = "ccdrawu"
-	Repo   = "https://github.com/vulcanshen/ccdrawu.git"
+	Repo   = "https://github.com/KobeBryant-24/ccdrawu.git"
 )
 
 // SourceFrom is where install takes the plugin from: CCDRAWU__MARKETPLACE

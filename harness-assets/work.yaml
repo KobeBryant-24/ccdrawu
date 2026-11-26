@@ -225,7 +225,7 @@ tasks:
   - id: 19
     spec: 15
     implementation: |
-      ccdrawu update：os.Exit(terminu.SelfUpdate{App: ccdrawu, Version: version.Version, Owner: vulcanshen, Tap: vulcanshen/tap, Source: git pull && make install, Then: ccdrawu install claude, After}.Run(stdout, stderr))（terminu-go v1.3.7，tdp E1）：最新版看 github.com/vulcanshen/ccdrawu/releases/latest 的轉址（不走 API）；已經是最新版說「ccdrawu <版本> is the latest release.」、比最新正式版還新說「… is newer than the latest release, <最新>.」，exit 0；Homebrew 跑 brew upgrade vulcanshen/tap/ccdrawu；安裝腳本或下載的：抓 release 的壓縮檔、照 checksums.txt 驗過、換掉自己；Scoop 印 scoop update ccdrawu 與 ccdrawu install claude，exit 0；從原始碼編的說請在那邊更新（`git pull && make install`）再跑 `ccdrawu install claude`，exit 1；寫不進資料夾說明怎麼做，exit 1；錯誤寫 stderr、開頭 ccdrawu:
+      ccdrawu update：os.Exit(terminu.SelfUpdate{App: ccdrawu, Version: version.Version, Owner: vulcanshen, Tap: KobeBryant-24/tap, Source: git pull && make install, Then: ccdrawu install claude, After}.Run(stdout, stderr))（terminu-go v1.3.7，tdp E1）：最新版看 github.com/KobeBryant-24/ccdrawu/releases/latest 的轉址（不走 API）；已經是最新版說「ccdrawu <版本> is the latest release.」、比最新正式版還新說「… is newer than the latest release, <最新>.」，exit 0；Homebrew 跑 brew upgrade KobeBryant-24/tap/ccdrawu；安裝腳本或下載的：抓 release 的壓縮檔、照 checksums.txt 驗過、換掉自己；Scoop 印 scoop update ccdrawu 與 ccdrawu install claude，exit 0；從原始碼編的說請在那邊更新（`git pull && make install`）再跑 `ccdrawu install claude`，exit 1；寫不進資料夾說明怎麼做，exit 1；錯誤寫 stderr、開頭 ccdrawu:
       After（pluginAfter）：已經是最新的、或剛更新完，Claude Code 有外掛（claude plugin list --json 有 ccdrawu@…）就用最新的那個 ccdrawu（Homebrew 是它 bin 裡的連結）跑 install claude，把外掛換成同一版；沒有外掛說「The ccdrawu plugin is not in Claude Code; `ccdrawu install claude` adds it.」，不裝
       ccdrawu 自己的 internal/update（查最新版、比版本、下載換檔）拿掉了，換成 lib 的
     test:
@@ -299,8 +299,8 @@ tasks:
     spec: 16
     implementation: |
       install.sh、install.ps1、uninstall.sh、uninstall.ps1；.goreleaser.yaml 與 .github/workflows/release.yml 在推 v* tag 時測試、發 GitHub release、推 Homebrew tap 與 Scoop bucket
-      install.ps1 查最新版：System.Net.Http.HttpClient 關掉自動轉址（AllowAutoRedirect false），GET github.com/vulcanshen/ccdrawu/releases/latest，從 Location 的 /releases/tag/v<版本> 取 tag 與版號，下載 github.com/…/releases/download/<tag>/ccdrawu_<版本>_windows_<arch>.zip；查不到（連不上、沒有 Location、不是 tag 的網址）寫「Error: Cannot find the latest release of vulcanshen/ccdrawu on GitHub.」與去哪裡下載，exit 1；不用 GitHub API（Windows PowerShell 5.1 與 7 都有 HttpClient）
-      install.sh 照 harness v1.3.5 的範本：curl -w %{redirect_url} 讀 github.com/vulcanshen/ccdrawu/releases/latest 轉到哪個 tag，取 v 後面的版號；查不到說明、exit 1
+      install.ps1 查最新版：System.Net.Http.HttpClient 關掉自動轉址（AllowAutoRedirect false），GET github.com/KobeBryant-24/ccdrawu/releases/latest，從 Location 的 /releases/tag/v<版本> 取 tag 與版號，下載 github.com/…/releases/download/<tag>/ccdrawu_<版本>_windows_<arch>.zip；查不到（連不上、沒有 Location、不是 tag 的網址）寫「Error: Cannot find the latest release of KobeBryant-24/ccdrawu on GitHub.」與去哪裡下載，exit 1；不用 GitHub API（Windows PowerShell 5.1 與 7 都有 HttpClient）
+      install.sh 照 harness v1.3.5 的範本：curl -w %{redirect_url} 讀 github.com/KobeBryant-24/ccdrawu/releases/latest 轉到哪個 tag，取 v 後面的版號；查不到說明、exit 1
     test:
       - check: repo
   - id: 26

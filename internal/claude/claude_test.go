@@ -44,7 +44,7 @@ func TestInstallTakesTheMarketplaceItIsGiven(t *testing.T) {
 const pinned = Repo + "#v0.1.2"
 
 // The marketplace Claude Code has, from where the release tag of ccdrawu 0.1.2 pins it
-const marketsPinned = `[{"name": "ccdrawu", "source": "git", "url": "https://github.com/vulcanshen/ccdrawu.git", "ref": "v0.1.2"}]`
+const marketsPinned = `[{"name": "ccdrawu", "source": "git", "url": "https://github.com/KobeBryant-24/ccdrawu.git", "ref": "v0.1.2"}]`
 
 // A release of ccdrawu takes the plugin from its own tag; a dev build from the
 // default branch; CCDRAWU__MARKETPLACE from wherever it says
@@ -97,8 +97,8 @@ func TestInstallUpdatesThePluginThere(t *testing.T) {
 // removed (its plugin with it) and the plugin installed from there
 func TestInstallMovesThePluginToItsTag(t *testing.T) {
 	for _, markets := range []string{
-		`[{"name": "ccdrawu", "source": "git", "url": "https://github.com/vulcanshen/ccdrawu.git", "ref": "v0.1.1"}]`,
-		`[{"name": "ccdrawu", "source": "github", "repo": "vulcanshen/ccdrawu"}]`,
+		`[{"name": "ccdrawu", "source": "git", "url": "https://github.com/KobeBryant-24/ccdrawu.git", "ref": "v0.1.1"}]`,
+		`[{"name": "ccdrawu", "source": "github", "repo": "KobeBryant-24/ccdrawu"}]`,
 	} {
 		f := &fake{answers: map[string]string{
 			"claude plugin list":               listed,

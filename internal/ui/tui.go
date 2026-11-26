@@ -8,8 +8,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 	terminu "github.com/vulcanshen/terminu-go"
 )
 

@@ -1,5 +1,5 @@
 # ccdrawu uninstaller for Windows
-# Usage: irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 	terminu "github.com/vulcanshen/terminu-go"
 	"github.com/vulcanshen/terminu-go/tdptest"
 )

@@ -63,6 +63,28 @@ label 一律 ≤4 个汉字（8 显示列，正好塞进上游的 `LABEL = 9` �
 
 `sensitive: true` → 存平台安全存储，不落 `settings.json` 明文。
 
+### 4. fork 自己的几处（与上游不同的地方）
+
+| 地方 | 改成 | 为什么 |
+|---|---|---|
+| `go.mod` 的 `module` | `github.com/KobeBryant-24/ccdrawu` | 否则 `go install github.com/vulcanshen/ccdrawu/cmd/ccdrawu@latest` 装的是上游的 |
+| `internal/claude/claude.go` 的 `Repo` | `https://github.com/KobeBryant-24/ccdrawu.git` | 插件从哪儿来 |
+| `cmd/ccdrawu/main.go` 的 `selfUpdate()` | `Owner` / `Tap` → `KobeBryant-24` | 否则 `ccdrawu update` 去查**上游**的 release，不是你的 fork |
+| `.claude-plugin/plugin.json` 的 `version` | `1.4.3-cn.1` | 抽屉里 "ccdrawu" 那行显示的版本（mod 读的就是这个文件）|
+| `install.ps1` / `install.sh` / `uninstall.*` / `.goreleaser.yaml` | 仓库地址 | 让发布与安装脚本指向 fork |
+
+`plugin.json` 的 `author` 保留 `vulcanshen`（GPL 的归属权给原作者），`repository` 指向 fork。
+
+**版本号方案**：`1.4.3-cn.1` = 上游 `1.4.3` + fork 后缀 `-cn.1`。
+Go 二进制的版本号由构建参数注入（源码里默认 `dev`，和上游一致）：
+
+```
+go build -trimpath -ldflags "-s -w -X github.com/KobeBryant-24/ccdrawu/internal/version.Version=1.4.3-cn.1" ...
+```
+
+`SourceFrom()` 会把市场源拼成 `Repo#v<版本>`，也就是 `...ccdrawu.git#v1.4.3-cn.1` ——
+**所以 GitHub 上要有 `v1.4.3-cn.1` 这个 tag**，否则 `ccdrawu install claude` 会拉不到。
+
 ---
 
 ## 二、目录
@@ -121,18 +143,31 @@ ccdrawu@ccdrawu-cn   Read from: E:\CodeHub\ccdrawu-cn   ✔ enabled
 
 ## 五、remote 现状
 
-- `upstream` → `https://github.com/vulcanshen/ccdrawu.git` ✓ 已设好
-- `origin` → **还没设**。需要你在 GitHub 网页上 fork 上游（<https://github.com/vulcanshen/ccdrawu> → Fork 按钮），
-  拿到自己账号下的地址后，把 `origin` 指过去。
+- `upstream` → `https://github.com/vulcanshen/ccdrawu.git` ✓
+- `origin` → `https://github.com/KobeBryant-24/ccdrawu.git` ✓（你的 fork）
 
 推送时的认证：Git 自带的 credential manager 已经配好了（`credential.helper = manager`，
 `git-credential-manager.exe` 在 `D:\Git\mingw64\bin\`），首次推送会弹浏览器登录。
 也可以用 TortoiseGit 的 Push 对话框。
 
+**要打的 tag**：`v1.4.3-cn.1`（版本号去掉 v 就是 `1.4.3-cn.1`）。
+`SourceFrom()` 拼的是 `Repo#v1.4.3-cn.1`，tag 不存在的话 `ccdrawu install claude` 会拉不到。
+
 ---
 
-## 六、注意
+## 六、已知问题
 
-**别对已安装的插件直接跑 `ccdrawu install claude` 或 `claude plugin update ccdrawu`** ——
-那会从 git ref v1.4.2 重新拉取，把这三处改动全覆盖掉（manifest 的 `userConfig` 也没了）。
-要更新上游，走上面的「同步」流程，然后用 `deploy.cmd` 部署。
+**`go test ./...` 里 `TestDoctorSetsRightWhatDoesNotFit` 是失败的 —— 上游 v1.4.3 也一样失败**，
+不是这个 fork 引入的。其余包（`internal/claude`、`internal/config`、`internal/statusline`、
+`internal/ui`）全过。
+
+---
+
+## 七、注意
+
+**别对已装的插件直接跑 `claude plugin update ccdrawu`**（上游那个 GitHub 版）——
+它会从 git ref v1.4.3 重新拉取上游代码。**要更新 fork，走上面的「同步」流程**，
+改完 `E:\CodeHub\ccdrawu-cn` 里的源码后，Claude Code 里 `/reload-plugins` 即可（原地加载）。
+
+上游那个 GitHub 版插件已经**卸载**（`claude plugin uninstall ccdrawu`），但它的**市场保留着**
+（`claude plugin marketplace list` 里还能看到 `ccdrawu`），想看上游源码或对比时可以用。

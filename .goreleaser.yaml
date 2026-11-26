@@ -56,7 +56,7 @@ release:
 # com.apple.quarantine, so an unsigned binary runs clean.
 brews:
   - repository:
-      owner: vulcanshen
+      owner: KobeBryant-24
       name: homebrew-tap
       # One token for everything, GITHUB_TOKEN (user, 2026-09-25): a release
       # run by hand takes the shell's; the workflow hands it the PAT in
@@ -65,7 +65,7 @@ brews:
       token: "{{ .Env.GITHUB_TOKEN }}"
     # A pre-release never reaches the tap: brew keeps the stable release.
     skip_upload: auto
-    homepage: "https://github.com/vulcanshen/ccdrawu"
+    homepage: "https://github.com/KobeBryant-24/ccdrawu"
     # app: one line, what the app is, ending in (terminu family).
     description: "ccdrawu: a status drawer for Claude Code — usage limits, context, model, cost and git beside the transcript (terminu family)"
     # app: what to run first, where the settings and data live, the Nerd
@@ -86,10 +86,10 @@ brews:
 
 scoops:   # Windows
   - repository:
-      owner: vulcanshen
+      owner: KobeBryant-24
       name: scoop-bucket
       token: "{{ .Env.GITHUB_TOKEN }}"
     skip_upload: auto
-    homepage: "https://github.com/vulcanshen/ccdrawu"
+    homepage: "https://github.com/KobeBryant-24/ccdrawu"
     # app: the same line as the brews description above.
     description: "ccdrawu: a status drawer for Claude Code — usage limits, context, model, cost and git beside the transcript (terminu family)"

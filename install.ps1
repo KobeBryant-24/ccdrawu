@@ -1,9 +1,9 @@
 # ccdrawu installer for Windows
-# Usage: irm https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 
-$repo = "vulcanshen/ccdrawu"
+$repo = "KobeBryant-24/ccdrawu"
 $installDir = "$env:LOCALAPPDATA\ccdrawu"
 
 # Detect architecture

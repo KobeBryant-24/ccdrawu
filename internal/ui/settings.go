@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
-	"github.com/vulcanshen/ccdrawu/internal/version"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/version"
 	terminu "github.com/vulcanshen/terminu-go"
 )
 

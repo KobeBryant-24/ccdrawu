@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 )
 
 // uninstall claude puts back the user's own theme and status line, which it
@@ -148,7 +148,7 @@ func TestUninstallGoesOnWithValuesThatDoNotFit(t *testing.T) {
 // where it has none, it says how to add it and adds none
 func TestUpdateTakesThePluginAlong(t *testing.T) {
 	u := selfUpdate()
-	if u.App != "ccdrawu" || u.Owner != "vulcanshen" || u.Tap != "vulcanshen/tap" || u.Then != "ccdrawu install claude" || u.After == nil {
+	if u.App != "ccdrawu" || u.Owner != "KobeBryant-24" || u.Tap != "KobeBryant-24/tap" || u.Then != "ccdrawu install claude" || u.After == nil {
 		t.Fatalf("selfUpdate = %+v", u)
 	}
 	none := func(string, ...string) ([]byte, error) {
@@ -194,7 +194,7 @@ func TestWrongUseAndSentences(t *testing.T) {
 		"/tmp/x can't be read: denied":            "/tmp/x can't be read: denied",
 		"~/.ccdrawu/originals.yaml can't be read": "~/.ccdrawu/originals.yaml can't be read",
 		"claude plugin list: exit status 1":       "claude plugin list: exit status 1",
-		"brew upgrade vulcanshen/tap/ccdrawu: x":  "brew upgrade vulcanshen/tap/ccdrawu: x",
+		"brew upgrade KobeBryant-24/tap/ccdrawu: x":  "brew upgrade KobeBryant-24/tap/ccdrawu: x",
 		"This ccdrawu is built from source":       "This ccdrawu is built from source",
 		"":                                        "",
 	} {

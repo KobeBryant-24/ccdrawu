@@ -14,8 +14,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 	terminu "github.com/vulcanshen/terminu-go"
 )
 
@@ -956,11 +956,11 @@ func TestPluginRowInstallsAfterAsking(t *testing.T) {
 	press(d, tea.KeyMsg{Type: tea.KeyEnter}) // into [2]
 	press(d, key("G"))                       // the last field: the plugin
 	press(d, tea.KeyMsg{Type: tea.KeyEnter}) // the confirm
-	if !f.installed && slices.Contains(f.ran, "plugin install ccdrawu --marketplace https://github.com/vulcanshen/ccdrawu.git --json") {
+	if !f.installed && slices.Contains(f.ran, "plugin install ccdrawu --marketplace https://github.com/KobeBryant-24/ccdrawu.git --json") {
 		t.Fatal("installed before the confirm was answered")
 	}
 	press(d, tea.KeyMsg{Type: tea.KeyEnter}) // install
-	if !slices.Contains(f.ran, "plugin install ccdrawu --marketplace https://github.com/vulcanshen/ccdrawu.git --json") {
+	if !slices.Contains(f.ran, "plugin install ccdrawu --marketplace https://github.com/KobeBryant-24/ccdrawu.git --json") {
 		t.Fatalf("ran %q, want the install:\n%s", f.ran, frameText(d))
 	}
 	if d.plugin != "installed" {

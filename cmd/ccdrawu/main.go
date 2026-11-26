@@ -16,11 +16,11 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/vulcanshen/ccdrawu/internal/claude"
-	"github.com/vulcanshen/ccdrawu/internal/config"
-	"github.com/vulcanshen/ccdrawu/internal/statusline"
-	"github.com/vulcanshen/ccdrawu/internal/ui"
-	"github.com/vulcanshen/ccdrawu/internal/version"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/statusline"
+	"github.com/KobeBryant-24/ccdrawu/internal/ui"
+	"github.com/KobeBryant-24/ccdrawu/internal/version"
 	"github.com/vulcanshen/terminu-go"
 )
 
@@ -218,7 +218,7 @@ func doctor(loc config.Locations, out, errs io.Writer) int {
 // ccdrawu install claude after updating by hand.
 func selfUpdate() terminu.SelfUpdate {
 	return terminu.SelfUpdate{
-		App: "ccdrawu", Version: version.Version, Owner: "vulcanshen", Tap: "vulcanshen/tap",
+		App: "ccdrawu", Version: version.Version, Owner: "KobeBryant-24", Tap: "KobeBryant-24/tap",
 		Source: "git pull && make install", Then: "ccdrawu install claude",
 		After: func(exe string, _ bool) error { return pluginAfter(exe, os.Stdout, claude.Exec) },
 	}
@@ -310,7 +310,7 @@ Environment:
   CCDRAWU__DATA              the theme and status line ccdrawu replaced in
                              Claude Code, to put back, instead of ~/.ccdrawu
   CCDRAWU__MARKETPLACE       where install takes the plugin from, instead of
-                             vulcanshen/ccdrawu: owner/repo, a git URL or a folder
+                             KobeBryant-24/ccdrawu: owner/repo, a git URL or a folder
   CCDRAWU__ICON_WIDTH        1 or 2: how many cells a Nerd Font icon takes,
                              instead of asking the terminal
   CCDRAWU__POWERLINE_WIDTH   1 or 2: the same for a powerline symbol

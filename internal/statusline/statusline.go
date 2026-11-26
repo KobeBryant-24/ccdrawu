@@ -19,7 +19,7 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 )
 
 // Seg is a piece of an item's value in its color, as the mod writes it.

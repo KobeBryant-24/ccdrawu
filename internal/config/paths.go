@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vulcanshen/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
 )
 
 // ShortHome is path with the home folder written ~, as the TUI and the

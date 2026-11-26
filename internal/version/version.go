@@ -9,6 +9,10 @@ package version
 
 // Version is the build version. Set to the goreleaser tag minus its "v" prefix
 // (e.g. "0.1.0") for tagged releases, "dev" otherwise.
+//
+// The default stays "dev" on purpose: SourceFrom pins the marketplace to
+// Repo#v<version> for a released version, and to the bare Repo for "dev", and
+// the tests run against a build without ldflags.
 var Version = "dev"
 
 // Display returns a human-friendly version string: "dev" for local builds,

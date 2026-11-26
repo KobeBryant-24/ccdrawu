@@ -1,6 +1,6 @@
 #!/bin/sh
 # ccdrawu uninstaller for macOS / Linux.
-# Usage: curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/uninstall.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/uninstall.sh | sh
 #
 # terminu family template (harness project/uninstall.sh). Replace ccdrawu; the
 # blocks marked "app's own" are the app's, the rest stays as it is.

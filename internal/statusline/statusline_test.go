@@ -11,7 +11,7 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/vulcanshen/ccdrawu/internal/config"
+	"github.com/KobeBryant-24/ccdrawu/internal/config"
 )
 
 var cat = config.Catalog{Items: []config.Item{

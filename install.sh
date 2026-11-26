@@ -1,6 +1,6 @@
 #!/bin/sh
 # ccdrawu installer for macOS / Linux.
-# Usage: curl -fsSL https://raw.githubusercontent.com/vulcanshen/ccdrawu/main/install.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/KobeBryant-24/ccdrawu/main/install.sh | sh
 #
 # terminu family template (harness project/install.sh). Replace ccdrawu; set
 # WINDOWS; the blocks marked "app's own" are the app's, the rest stays as it is.
@@ -8,7 +8,7 @@
 set -e
 
 APP="ccdrawu"
-REPO="vulcanshen/$APP"
+REPO="KobeBryant-24/$APP"
 # yes when the app ships a Windows build and an install.ps1.
 WINDOWS="yes"
 

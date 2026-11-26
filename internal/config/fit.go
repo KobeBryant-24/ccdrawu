@@ -12,7 +12,7 @@ import (
 
 	"github.com/vulcanshen/terminu-go"
 
-	"github.com/vulcanshen/ccdrawu/internal/claude"
+	"github.com/KobeBryant-24/ccdrawu/internal/claude"
 )
 
 // A config.yaml that reads as YAML, a mapping, with values ccdrawu can't use

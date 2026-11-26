@@ -147,7 +147,7 @@ tasks:
       - Homebrew 裝的交給 Homebrew；安裝腳本裝的下載 release 的執行檔、用 checksum 驗過再換掉自己；Scoop 裝的說要跑什麼；資料夾不能寫入時說明原因後停下來
       - 訊息裡要使用者打的指令用反引號：`git pull && make install`、`ccdrawu install claude`、`ccdrawu update`（tdp M5；tdp v1.2.18；tdp #25）；錯誤一行一件、開頭 ccdrawu: 、大寫開頭（tdp E1；tdp v1.2.18；tdp #24）；Scoop 那段的指令各自一行縮排，不在句子裡，不加
       - 照 tdp E1 的 update（tdp v1.3.0 起每個 app 都有，照 ccdrawu 的做法寫）：已經是最新版說 is the latest release、比最新正式版還新（beta）說 is newer than the latest release, <最新>，都 exit 0
-      - 最新版從 github.com/vulcanshen/ccdrawu/releases/latest 轉到哪個 tag 看，不用 GitHub API：API 不帶登入時同一個網路每小時共用 60 次，用完回 403（使用者 2026-11-20 遇到）；下載本來就不走 API
+      - 最新版從 github.com/KobeBryant-24/ccdrawu/releases/latest 轉到哪個 tag 看，不用 GitHub API：API 不帶登入時同一個網路每小時共用 60 次，用完回 403（使用者 2026-11-20 遇到）；下載本來就不走 API
       - 用 terminu-go 的 SelfUpdate（使用者 2026-11-24 選的）：家族同一份 update，lib 修的 ccdrawu 都跟著有；ccdrawu 自己的只剩更新完的事（tdp E1：app 可以自行決定）：Claude Code 有外掛就用最新的 ccdrawu 跑 install claude；從原始碼編的、Scoop 裝的，手動更新後要跑的 ccdrawu install claude 寫在 Then
       - {note: SelfUpdate 原本也用 API 查、會遇到同一個 403；terminu-go v1.3.7 照 ccdrawu 提的做法改看轉址，修好了（2026-11-24 terminu 通知）, issue: 本機用 SendMessage 傳給 terminu-go session（2026-11-24，使用者選不發 GitHub）}
   - id: 20
@@ -189,7 +189,7 @@ tasks:
     tdp: [tdp E6, harness project]
     remark:
       - 移除腳本先問過才刪設定與快取
-      - install.ps1（ccdrawu 自己的，不是範本）查最新版看 github.com/vulcanshen/ccdrawu/releases/latest 轉到哪個 tag，不用 GitHub API（同 task 19 的 403；2026-11-24 terminu 通知）；查不到就說明、exit 1。install.sh 是 harness 的範本：harness v1.3.5 的範本改看轉址之後，照 check 重新複製了（2026-11-25）
+      - install.ps1（ccdrawu 自己的，不是範本）查最新版看 github.com/KobeBryant-24/ccdrawu/releases/latest 轉到哪個 tag，不用 GitHub API（同 task 19 的 403；2026-11-24 terminu 通知）；查不到就說明、exit 1。install.sh 是 harness 的範本：harness v1.3.5 的範本改看轉址之後，照 check 重新複製了（2026-11-25）
   - id: 26
     spec: 1
     request: README（英文與繁中）與 CHANGELOG

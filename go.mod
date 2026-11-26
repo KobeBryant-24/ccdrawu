@@ -1,4 +1,4 @@
-module github.com/vulcanshen/ccdrawu
+module github.com/KobeBryant-24/ccdrawu
 
 go 1.26.0
 
