@@ -10,6 +10,7 @@ import type {
   Limit,
   ModelInfo,
   Modes,
+  PlanInfo,
   ServiceStatus,
   SessionInfo,
   SkillsInfo,
@@ -55,10 +56,12 @@ import {
   parseShortstat,
   parseStatusV2,
   percentText,
+  planFrom,
   sessionTasks,
   repoFromRemote,
   shortPath,
   usageColor,
+  type TaskFile,
 } from './format'
 import { C, ITEMS, view, type Seg, type Snapshot, type View } from './items'
 import {
@@ -80,7 +83,7 @@ import {
   segWidth,
   showsAnywhere,
 } from './layout'
-import { locations } from './paths'
+import { claudeDir, locations } from './paths'
 import { statuslineFile } from './statusline'
 
 const PANE = 'ccdrawu'
@@ -97,6 +100,7 @@ const tokens = atom({ plugin: 'ccdrawu', key: 'tokens' } as const, { input: 0, o
 const sessionInfo = atom({ plugin: 'ccdrawu', key: 'session' } as const, {} as SessionInfo)
 const service = atom({ plugin: 'ccdrawu', key: 'status' } as const, null as ServiceStatus | null)
 const skills = atom({ plugin: 'ccdrawu', key: 'skills' } as const, { count: 0 } as SkillsInfo)
+const plan = atom({ plugin: 'ccdrawu', key: 'plan' } as const, null as PlanInfo | null)
 const compacts = atom({ plugin: 'ccdrawu', key: 'compacts' } as const, 0)
 const agents = atom({ plugin: 'ccdrawu', key: 'agents' } as const, 0)
 const background = atom({ plugin: 'ccdrawu', key: 'background' } as const, {} as Background)
@@ -235,6 +239,8 @@ let home: string | undefined
 let cacheDir: string | undefined
 let configFile: string | undefined
 let oldConfigFile: string | undefined
+// Claude Code's own folder, where settings.json, projects/ and tasks/ are
+let claudeFolder: string | undefined
 
 async function locateFiles($: Engine) {
   // Windows has USERPROFILE, and often no HOME; the TUI's os.UserHomeDir reads them in this order too
@@ -249,10 +255,12 @@ async function locateFiles($: Engine) {
     xdgConfig: await $.env.get('XDG_CONFIG_HOME'),
     xdgCache: await $.env.get('XDG_CACHE_HOME'),
     localAppData,
+    claudeConfig: await $.env.get('CLAUDE_CONFIG_DIR'),
   })
   cacheDir = found.cache
   configFile = found.configFile
   oldConfigFile = found.oldConfigFile
+  claudeFolder = found.claudeDir
 }
 
 // darwin on macOS, as Go's runtime.GOOS has it, which says where the TUI looks for the cache
@@ -519,6 +527,29 @@ async function refreshAgents($: Engine) {
   await update($, kits, ks => kitsFor(ks, ids, species, coat, Math.random))
 }
 
+// The plan of the session's tasks, as Claude Code writes it: one file per task in
+// <Claude Code's folder>/tasks/<session id>/, each with its subject, its state, and what it says while
+// it is in progress. Read only while the config has the row on.
+async function refreshPlan($: Engine) {
+  if (!showsAnywhere(await read($, config), 'plan')) return
+  if (claudeFolder === '') return
+  const id = (await $.session.id()).replace(/\.jsonl$/, '')
+  const dir = `${claudeFolder}/tasks/${id}`
+  const entries = await $.fs.list(dir).catch(() => [])
+  const files: TaskFile[] = []
+  for (const entry of entries) {
+    if (!entry.name.endsWith('.json')) continue
+    const text = await $.fs.read(`${dir}/${entry.name}`).catch(() => undefined)
+    if (text === undefined) continue
+    try {
+      files.push(JSON.parse(text) as TaskFile)
+    } catch {
+      // a file that can't be parsed is left out
+    }
+  }
+  await update($, plan, () => (files.length === 0 ? null : planFrom(files)))
+}
+
 async function refreshVersion($: Engine) {
   const { base, version: full } = await $.session.version()
   const current = base ?? full
@@ -548,6 +579,7 @@ async function readSnapshot($: Engine): Promise<Snapshot> {
     session: await read($, sessionInfo),
     status: await read($, service),
     skills: await read($, skills),
+    plan: await read($, plan),
     compacts: await read($, compacts),
     agents: await read($, agents),
     background: await read($, background),
@@ -629,13 +661,15 @@ export const register: Register = (on, options) => {
     quietly(installCatalog($))
     await startSession($)
 
-    // Countdowns and uptime every 30 seconds; git, path and subagents every 5; Claude's status every 5
-    // minutes while its row shows (first when the config turns it on); the latest version every 6 hours;
-    // the config, and the statusline's file while it is on, every second
+    // Countdowns and uptime every 30 seconds; git, path and subagents every 5; the task plan every 5
+    // too, since a task changes while a turn runs; Claude's status every 5 minutes while its row shows
+    // (first when the config turns it on); the latest version every 6 hours; the config, and the
+    // statusline's file while it is on, every second
     $.clock.every(30_000, () => quietly(tick($)))
     $.clock.every(5_000, () => {
       quietly(refreshGit($))
       quietly(refreshAgents($))
+      quietly(refreshPlan($))
     })
     $.clock.every(5 * 60_000, () => quietly(refreshStatus($)))
     $.clock.every(6 * 60 * 60_000, () => quietly(refreshVersion($)))
@@ -675,6 +709,7 @@ export const register: Register = (on, options) => {
   on('session.measure', async ($, e, next) => {
     const result = await next(e)
     quietly(refreshUsage($))
+    quietly(refreshPlan($))
     return result
   })
 
@@ -714,6 +749,7 @@ export const register: Register = (on, options) => {
       quietly(refreshSession($))
     }
     quietly(refreshAgents($))
+    quietly(refreshPlan($))
     return result
   })
 

@@ -10,6 +10,7 @@ export type Env = {
   xdgConfig?: string
   xdgCache?: string
   localAppData?: string
+  claudeConfig?: string
 }
 
 // configFile: config.yaml in CCDRAWU__CONFIG, else $XDG_CONFIG_HOME/ccdrawu, else ~/.config/ccdrawu; oldConfigFile
@@ -17,9 +18,14 @@ export type Env = {
 // cache: CCDRAWU__CACHE, else ccdrawu in the system's cache folder, as Go's os.UserCacheDir has it (~/Library/Caches,
 // an absolute $XDG_CACHE_HOME, else ~/.cache), and on Windows the cache folder in %LOCALAPPDATA%\ccdrawu, beside
 // ccdrawu.exe: the catalog and the statusline's values, which this mod writes anew, so a cache
-export function locations(env: Env): { configFile: string; oldConfigFile: string; cache: string } {
+export function locations(env: Env): { configFile: string; oldConfigFile: string; cache: string; claudeDir: string } {
   const config = env.config || (env.xdgConfig ? `${env.xdgConfig}/ccdrawu` : `${env.home}/.config/ccdrawu`)
-  return { configFile: `${config}/config.yaml`, oldConfigFile: `${config}/config.json`, cache: cacheDir(env) }
+  return {
+    configFile: `${config}/config.yaml`,
+    oldConfigFile: `${config}/config.json`,
+    cache: cacheDir(env),
+    claudeDir: claudeDir(env),
+  }
 }
 
 function cacheDir(env: Env): string {
@@ -28,4 +34,11 @@ function cacheDir(env: Env): string {
   if (env.os === 'darwin') return `${env.home}/Library/Caches/ccdrawu`
   if (env.xdgCache?.startsWith('/')) return `${env.xdgCache}/ccdrawu`
   return `${env.home}/.cache/ccdrawu`
+}
+
+// claudeDir: Claude Code's own folder, where settings.json, projects/ and tasks/ are:
+// CLAUDE_CONFIG_DIR, else ~/.claude
+export function claudeDir(env: Env): string {
+  if (env.claudeConfig) return env.claudeConfig
+  return `${env.home}/.claude`
 }

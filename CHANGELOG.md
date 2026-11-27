@@ -2,6 +2,12 @@
 
 Each release names the version of terminu design (tdp) it follows.
 
+## v1.4.3-cn.5 — tdp v1.3.5
+
+- A new row, Plan: this session's plan of tasks, as Claude Code writes it — one file per task in `<Claude Code's folder>/tasks/<session id>/`, each with its subject, its state and what it says while it is in progress. The row shows how many are done of how many there are, with a bar, and the task in progress under it. A task that is done or skipped counts as done.
+- The mod reads Claude Code's own folder from `CLAUDE_CONFIG_DIR`, so it finds the tasks there and not only in `~/.claude`.
+- The bar's squares are the Unicode block elements rather than the Nerd Font glyphs upstream uses (U+F445 and U+F51D, in the private use area): those two are in no font but a Nerd Font, so in every other terminal — Windows Terminal with Cascadia Code, for one — they came out as empty boxes. U+2588 and U+2591 are standard block elements, in every monospace font, and still tell the filled part of the bar from the empty one.
+
 ## v1.4.3-cn.4 — tdp v1.3.5
 
 The first release of this fork, `KobeBryant-24/ccdrawu`. It carries upstream v1.4.3 and adds:

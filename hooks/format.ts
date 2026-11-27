@@ -223,3 +223,21 @@ export function commandNames(alias: unknown): string[] {
   if (extra === '' || extra === 'ccdrawu' || !/^[a-z0-9][a-z0-9-]*$/i.test(extra)) return ['ccdrawu']
   return ['ccdrawu', extra]
 }
+
+// A task file Claude Code writes for a task of the session's plan: its subject, its state, and what it
+// says while it is in progress
+export type TaskFile = {
+  id?: string
+  subject?: string
+  description?: string
+  activeForm?: string
+  status?: string
+}
+
+// planFrom: the plan as the task files say it — how many are done, how many there are, and the one in
+// progress (what it says while it is, else its subject). A task that is done or skipped counts as done.
+export function planFrom(files: readonly TaskFile[]): { done: number; total: number; current?: string } {
+  const done = files.filter(t => t.status === 'completed' || t.status === 'skipped').length
+  const current = files.find(t => t.status === 'in_progress')
+  return { done, total: files.length, current: current?.activeForm ?? current?.subject }
+}

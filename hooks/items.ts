@@ -1,7 +1,7 @@
 // The drawer's items: the catalog (written to catalog.json in the cache for the TUI to list)
 // and what each one shows. None touches `$`, so tests can call them.
 
-import type { Background, CacheInfo, GitInfo, Limit, ModelInfo, Modes, ServiceStatus, SessionInfo, SkillsInfo, TokenInfo, Usage, VersionInfo } from '../types'
+import type { Background, CacheInfo, GitInfo, Limit, ModelInfo, Modes, PlanInfo, ServiceStatus, SessionInfo, SkillsInfo, TokenInfo, Usage, VersionInfo } from '../types'
 import { compact, countdown, directoryName, duration, effortColor, filesText, isNewer, modeLabel, percentText, syncText, tasksText, usageColor } from './format'
 
 // Catppuccin Mocha: keys in blue, values in text.
@@ -51,6 +51,7 @@ export const ITEMS: readonly Item[] = [
   { id: 'cache', label: '缓存', short: '缓存', name: '缓存命中率', group: '活动', description: '最近一次请求中由提示缓存提供的比例', dock: true, inline: true, statusline: false },
   { id: 'compact', label: '压缩', short: '压缩', name: '压缩次数', group: '活动', description: '上下文被压缩的次数', dock: true, inline: true, statusline: false },
   { id: 'tasks', label: '任务', short: '任务', name: '后台任务', group: '活动', description: '当前运行的 subagent，以及 Claude 上次回复时后台的 shell、monitor 和 workflow', dock: true, inline: true, statusline: false },
+  { id: 'plan', label: '计划', short: '计划', name: '任务计划', group: '活动', description: '本会话的任务计划：已完成数与总数，以及正在做的那一条', dock: true, inline: true, statusline: false },
   { id: 'skills', label: '技能', short: '技能', name: '技能', group: '活动', description: '本次会话运行过的技能，以及最近一个', dock: false, inline: false, statusline: false },
   { id: 'git', label: 'Git', short: 'Git', name: 'Git 分支与改动', group: '工作区', description: '当前分支，以及相对 HEAD 新增和删除的行数', dock: true, inline: true, statusline: true },
   { id: 'sync', label: '同步', short: '同步', name: '领先与落后', group: '工作区', description: '相对 upstream 领先和落后的提交数', dock: false, inline: false, statusline: false },
@@ -76,6 +77,7 @@ export type Snapshot = {
   session: SessionInfo
   status: ServiceStatus | null
   skills: SkillsInfo
+  plan: PlanInfo | null
   compacts: number
   agents: number
   background: Background // by type, as of Claude's last reply
@@ -144,6 +146,16 @@ function held(id: string, s: Snapshot): View | undefined {
       return text(String(s.compacts))
     case 'tasks':
       return text(tasksText(s.agents, s.background))
+    case 'plan': {
+      const p = s.plan
+      if (p === null) return undefined
+      const percent = p.total === 0 ? 0 : (p.done / p.total) * 100
+      return {
+        value: [{ text: `${p.done}/${p.total}`, color: usageColor(percent) }],
+        meter: percent,
+        below: p.current === undefined ? undefined : [{ text: p.current, color: C.text }],
+      }
+    }
     case 'git':
       if (!s.git) return text('not a repo')
       return {

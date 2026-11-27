@@ -46,6 +46,10 @@ export type ServiceStatus = { indicator: string; description: string }
 // Skills run in this session, and the last one's name
 export type SkillsInfo = { count: number; last?: string }
 
+// This session's plan of tasks, as Claude Code writes it: how many of them are done, how many there
+// are, and the one in progress (what it says while it is, else its subject)
+export type PlanInfo = { done: number; total: number; current?: string }
+
 export type VersionInfo = { current: string; latest?: string }
 
 // permission: the permission mode (auto, plan, ...)
@@ -149,6 +153,7 @@ export type CcdrawuState = {
   session: SessionInfo
   status: ServiceStatus | null
   skills: SkillsInfo
+  plan: PlanInfo | null
   compacts: number
   agents: number
   background: Background
@@ -178,6 +183,7 @@ declare module 'claude-code' {
       session: CcdrawuState['session']
       status: CcdrawuState['status']
       skills: CcdrawuState['skills']
+      plan: CcdrawuState['plan']
       compacts: CcdrawuState['compacts']
       agents: CcdrawuState['agents']
       background: CcdrawuState['background']
