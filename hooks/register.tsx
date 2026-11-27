@@ -726,10 +726,12 @@ export const register: Register = (on, options) => {
       return {}
     }
     if (word === 'plan') {
-      const next = (await read($, planMode)) === 'all' ? 'remaining' : 'all'
-      await update($, planMode, () => next)
-      await keepPlanMode($, next)
-      await $.ui.toast(next === 'all' ? '计划：显示全部任务' : '计划：只看未完成与进行中')
+      // Not named next: the hook's own next is the continuation, and a binding of that name
+      // inside it shadows it, which the host refuses to load the module for
+      const mode = (await read($, planMode)) === 'all' ? 'remaining' : 'all'
+      await update($, planMode, () => mode)
+      await keepPlanMode($, mode)
+      await $.ui.toast(mode === 'all' ? '计划：显示全部任务' : '计划：只看未完成与进行中')
       return {}
     }
     // The drawer on or off for this session, wherever it sits, whatever the config has (drawerWanted). A
