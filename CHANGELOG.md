@@ -2,6 +2,10 @@
 
 Each release names the version of terminu design (tdp) it follows.
 
+## v1.4.3-cn.8 — tdp v1.3.5
+
+- Each task of the Plan row carries its number, behind a `§`, so it can be told apart from the rest and matched with the task's own id.
+
 ## v1.4.3-cn.7 — tdp v1.3.5
 
 - The Plan row lists the tasks still to do first: what is being worked on, then what is waiting, then what is done. Within a group they keep the order they were made in.

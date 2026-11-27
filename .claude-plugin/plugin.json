@@ -1,6 +1,6 @@
 {
   "name": "ccdrawu",
-  "version": "1.4.3-cn.7",
+  "version": "1.4.3-cn.8",
   "description": "A sidebar and a status line for Claude Code: usage limits, context, model, cost, git and session stats in a pane beside the transcript, or under the prompt. Local fork of vulcanshen/ccdrawu: Chinese interface, and MiniMax Coding Plan quota in the 5-hour and weekly rows.",
   "author": { "name": "vulcanshen" },
   "repository": "https://github.com/KobeBryant-24/ccdrawu",

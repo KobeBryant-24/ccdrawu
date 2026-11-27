@@ -119,8 +119,8 @@ export function view(id: string, s: Snapshot): View | undefined {
 // How many tasks the plan row lists, so it does not fill the pane past what fits
 const PLAN_MAX_ROWS = 12
 
-// A task's row: its mark, then what it says while it is in progress, else its subject. A task that is
-// done or skipped is dimmed; one in progress says what it is doing.
+// A task's row: its number, then its mark, then what it says while it is in progress, else its subject.
+// A task that is done or skipped is dimmed; one in progress says what it is doing.
 function planRow(t: PlanTask): Seg[] {
   const mark = PLAN_MARKS[t.status] ?? PLAN_MARKS.pending
   const dim = t.status === 'completed' || t.status === 'skipped'
@@ -128,6 +128,7 @@ function planRow(t: PlanTask): Seg[] {
     t.status === 'completed' ? C.green : t.status === 'in_progress' ? C.blue : t.status === 'blocked' ? C.peach : C.surface
   const text = t.status === 'in_progress' ? (t.activeForm ?? t.subject) : t.subject
   return [
+    { text: `§${t.id} `, color: C.surface },
     { text: `${mark} `, color: markColor },
     { text, color: dim ? C.surface : C.text },
   ]
