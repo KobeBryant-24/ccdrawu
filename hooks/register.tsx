@@ -11,6 +11,7 @@ import type {
   ModelInfo,
   Modes,
   PlanInfo,
+  PlanMode,
   ServiceStatus,
   SessionInfo,
   SkillsInfo,
@@ -101,6 +102,10 @@ const sessionInfo = atom({ plugin: 'ccdrawu', key: 'session' } as const, {} as S
 const service = atom({ plugin: 'ccdrawu', key: 'status' } as const, null as ServiceStatus | null)
 const skills = atom({ plugin: 'ccdrawu', key: 'skills' } as const, { count: 0 } as SkillsInfo)
 const plan = atom({ plugin: 'ccdrawu', key: 'plan' } as const, null as PlanInfo | null)
+// Which tasks the plan row lists: all of them, or only the ones not done yet. Kept between sessions in
+// the plugin's own store, so the choice is still there in the next one
+const planMode = atom({ plugin: 'ccdrawu', key: 'planMode' } as const, 'all' as PlanMode)
+const PLAN_MODE_KEY = 'plan-mode'
 const compacts = atom({ plugin: 'ccdrawu', key: 'compacts' } as const, 0)
 const agents = atom({ plugin: 'ccdrawu', key: 'agents' } as const, 0)
 const background = atom({ plugin: 'ccdrawu', key: 'background' } as const, {} as Background)
@@ -527,6 +532,25 @@ async function refreshAgents($: Engine) {
   await update($, kits, ks => kitsFor(ks, ids, species, coat, Math.random))
 }
 
+// The mode the user last chose, kept between sessions in the plugin's own store. A store that cannot
+// be read or written leaves the choice for this session alone.
+async function storedPlanMode($: Engine): Promise<PlanMode | undefined> {
+  try {
+    const v = await $.store.get(PLAN_MODE_KEY)
+    return v === 'all' || v === 'remaining' ? v : undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function keepPlanMode($: Engine, mode: PlanMode): Promise<void> {
+  try {
+    await $.store.set(PLAN_MODE_KEY, mode)
+  } catch {
+    // the choice still holds for this session
+  }
+}
+
 // The plan of the session's tasks, as Claude Code writes it: one file per task in
 // <Claude Code's folder>/tasks/<session id>/, each with its subject, its state, and what it says while
 // it is in progress. Read only while the config has the row on.
@@ -580,6 +604,7 @@ async function readSnapshot($: Engine): Promise<Snapshot> {
     status: await read($, service),
     skills: await read($, skills),
     plan: await read($, plan),
+    planMode: await read($, planMode),
     compacts: await read($, compacts),
     agents: await read($, agents),
     background: await read($, background),
@@ -636,6 +661,9 @@ async function startSession($: Engine) {
   configStamp = undefined
   statusWasShown = false
   await refreshConfig($).catch(() => undefined)
+  // Which tasks the plan row lists: the choice is the user's, kept between sessions
+  const storedMode = await storedPlanMode($)
+  if (storedMode !== undefined) await update($, planMode, () => storedMode)
   quietly(refreshUsage($))
   quietly(refreshModelName($))
   quietly(refreshGit($))
@@ -690,10 +718,18 @@ export const register: Register = (on, options) => {
   // Every slash command passes through here, so a failure must leave other commands alone
   on('command.run', async ($, e, next) => {
     if (!commands.has(e.command)) return next(e)
-    // /ccdrawu pat pats the pet, /ccdrawu ball throws it a ball; anything else opens or closes the drawer
+    // /ccdrawu pat pats the pet, /ccdrawu ball throws it a ball, /ccdrawu plan switches the plan row
+    // between all the tasks and the ones not done yet; anything else opens or closes the drawer
     const word = e.args.trim().toLowerCase()
     if (word === 'pat' || word === 'ball') {
       await petHears($, word)
+      return {}
+    }
+    if (word === 'plan') {
+      const next = (await read($, planMode)) === 'all' ? 'remaining' : 'all'
+      await update($, planMode, () => next)
+      await keepPlanMode($, next)
+      await $.ui.toast(next === 'all' ? '计划：显示全部任务' : '计划：只看未完成与进行中')
       return {}
     }
     // The drawer on or off for this session, wherever it sits, whatever the config has (drawerWanted). A
@@ -1108,7 +1144,17 @@ export const register: Register = (on, options) => {
     if (issueRow !== null) rows.push(issueRow)
     for (const { item, view: v } of shown) {
       rows.push(dockRow(item.label, v))
-      if (v.below !== undefined) {
+      if (v.rows !== undefined) {
+        // An item that lists things takes a row each, under its own
+        for (const r of v.rows) {
+          rows.push(
+            <Box flexDirection="row">
+              {label('')}
+              {segs(r)}
+            </Box>,
+          )
+        }
+      } else if (v.below !== undefined) {
         rows.push(
           <Box flexDirection="row">
             {label('')}

@@ -46,9 +46,27 @@ export type ServiceStatus = { indicator: string; description: string }
 // Skills run in this session, and the last one's name
 export type SkillsInfo = { count: number; last?: string }
 
+// A task of the session's plan, as Claude Code writes it: its number, its subject, its state, and what
+// it says while it is in progress
+export type PlanTask = {
+  id: string
+  subject: string
+  status: string
+  activeForm?: string
+}
+
 // This session's plan of tasks, as Claude Code writes it: how many of them are done, how many there
-// are, and the one in progress (what it says while it is, else its subject)
-export type PlanInfo = { done: number; total: number; current?: string }
+// are, the one in progress (what it says while it is, else its subject), and every task in the order
+// they were made
+export type PlanInfo = {
+  done: number
+  total: number
+  current?: string
+  tasks: PlanTask[]
+}
+
+// Which tasks the plan row lists: all of them, or only the ones not done yet
+export type PlanMode = 'all' | 'remaining'
 
 export type VersionInfo = { current: string; latest?: string }
 
@@ -154,6 +172,7 @@ export type CcdrawuState = {
   status: ServiceStatus | null
   skills: SkillsInfo
   plan: PlanInfo | null
+  planMode: PlanMode
   compacts: number
   agents: number
   background: Background
@@ -184,6 +203,7 @@ declare module 'claude-code' {
       status: CcdrawuState['status']
       skills: CcdrawuState['skills']
       plan: CcdrawuState['plan']
+      planMode: CcdrawuState['planMode']
       compacts: CcdrawuState['compacts']
       agents: CcdrawuState['agents']
       background: CcdrawuState['background']

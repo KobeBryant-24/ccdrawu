@@ -1,5 +1,7 @@
 // Pure helpers for the drawer: times, bars, paths, git stats, versions. None touches `$`, so tests can call them.
 
+import type { PlanTask } from '../types'
+
 const MINUTE = 60_000
 const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
@@ -234,10 +236,45 @@ export type TaskFile = {
   status?: string
 }
 
-// planFrom: the plan as the task files say it — how many are done, how many there are, and the one in
-// progress (what it says while it is, else its subject). A task that is done or skipped counts as done.
-export function planFrom(files: readonly TaskFile[]): { done: number; total: number; current?: string } {
-  const done = files.filter(t => t.status === 'completed' || t.status === 'skipped').length
-  const current = files.find(t => t.status === 'in_progress')
-  return { done, total: files.length, current: current?.activeForm ?? current?.subject }
+// planFrom: the plan as the task files say it — how many are done, how many there are, the one in
+// progress (what it says while it is, else its subject), and every task in the order they were made.
+// A task that is done or skipped counts as done.
+export function planFrom(files: readonly TaskFile[]): {
+  done: number
+  total: number
+  current?: string
+  tasks: PlanTask[]
+} {
+  const tasks = files
+    .map(f => ({
+      id: String(f.id ?? ''),
+      subject: (f.subject ?? f.description ?? '').trim(),
+      status: f.status ?? 'pending',
+      activeForm: f.activeForm,
+    }))
+    .filter(t => t.subject !== '' || t.activeForm !== undefined)
+    .sort((a, b) => taskOrder(a.id) - taskOrder(b.id))
+  const done = tasks.filter(t => t.status === 'completed' || t.status === 'skipped').length
+  const current = tasks.find(t => t.status === 'in_progress')
+  return {
+    done,
+    total: tasks.length,
+    current: current?.activeForm ?? current?.subject,
+    tasks,
+  }
+}
+
+// A task's number as a number, for the order the tasks were made in; one without a number goes last
+function taskOrder(id: string): number {
+  const n = Number(id)
+  return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER
+}
+
+// The marks a task's state is shown with: done, in progress, waiting, blocked, skipped
+export const PLAN_MARKS: Record<string, string> = {
+  completed: '✓',
+  in_progress: '◉',
+  pending: '○',
+  blocked: '■',
+  skipped: '–',
 }

@@ -1,8 +1,8 @@
 // The drawer's items: the catalog (written to catalog.json in the cache for the TUI to list)
 // and what each one shows. None touches `$`, so tests can call them.
 
-import type { Background, CacheInfo, GitInfo, Limit, ModelInfo, Modes, PlanInfo, ServiceStatus, SessionInfo, SkillsInfo, TokenInfo, Usage, VersionInfo } from '../types'
-import { compact, countdown, directoryName, duration, effortColor, filesText, isNewer, modeLabel, percentText, syncText, tasksText, usageColor } from './format'
+import type { Background, CacheInfo, GitInfo, Limit, ModelInfo, Modes, PlanInfo, PlanMode, PlanTask, ServiceStatus, SessionInfo, SkillsInfo, TokenInfo, Usage, VersionInfo } from '../types'
+import { compact, countdown, directoryName, duration, effortColor, filesText, isNewer, modeLabel, percentText, PLAN_MARKS, syncText, tasksText, usageColor } from './format'
 
 // Catppuccin Mocha: keys in blue, values in text.
 // The pane's background is not drawn here: it is the theme's composerSidebarBackground.
@@ -78,6 +78,7 @@ export type Snapshot = {
   status: ServiceStatus | null
   skills: SkillsInfo
   plan: PlanInfo | null
+  planMode: PlanMode
   compacts: number
   agents: number
   background: Background // by type, as of Claude's last reply
@@ -91,8 +92,9 @@ export type Seg = { text: string; color: string; bold?: boolean }
 
 // What an item shows. Beside the transcript a meter draws a bar, `resets` and `below` take a row of
 // their own (so a long value wraps whole) and `cutStart` keeps the end of a value too long for the row;
-// above the prompt all is text on one row
-export type View = { value: Seg[]; meter?: number; resets?: string; below?: Seg[]; cutStart?: boolean }
+// `rows` are rows of their own under it, for an item that lists things; above the prompt all is text
+// on one row
+export type View = { value: Seg[]; meter?: number; resets?: string; below?: Seg[]; rows?: Seg[][]; cutStart?: boolean }
 
 // What an item shows before it has a value, or where it has none: its row is there all the same, so the
 // rows after it do not move when the value comes
@@ -112,6 +114,23 @@ function limitView(limit: Limit | undefined, now: number): View {
 export function view(id: string, s: Snapshot): View | undefined {
   if (id === 'pet' || !ITEMS.some(item => item.id === id)) return undefined
   return held(id, s) ?? { value: [{ text: NO_VALUE, color: C.text }] }
+}
+
+// How many tasks the plan row lists, so it does not fill the pane past what fits
+const PLAN_MAX_ROWS = 12
+
+// A task's row: its mark, then what it says while it is in progress, else its subject. A task that is
+// done or skipped is dimmed; one in progress says what it is doing.
+function planRow(t: PlanTask): Seg[] {
+  const mark = PLAN_MARKS[t.status] ?? PLAN_MARKS.pending
+  const dim = t.status === 'completed' || t.status === 'skipped'
+  const markColor =
+    t.status === 'completed' ? C.green : t.status === 'in_progress' ? C.blue : t.status === 'blocked' ? C.peach : C.surface
+  const text = t.status === 'in_progress' ? (t.activeForm ?? t.subject) : t.subject
+  return [
+    { text: `${mark} `, color: markColor },
+    { text, color: dim ? C.surface : C.text },
+  ]
 }
 
 // What an item holds, or undefined while it holds nothing
@@ -150,10 +169,17 @@ function held(id: string, s: Snapshot): View | undefined {
       const p = s.plan
       if (p === null) return undefined
       const percent = p.total === 0 ? 0 : (p.done / p.total) * 100
+      const listed =
+        s.planMode === 'remaining' ? p.tasks.filter(t => t.status !== 'completed' && t.status !== 'skipped') : p.tasks
+      const rows = listed.slice(0, PLAN_MAX_ROWS).map(planRow)
+      if (listed.length > PLAN_MAX_ROWS) {
+        rows.push([{ text: `…还有 ${listed.length - PLAN_MAX_ROWS} 条`, color: C.surface }])
+      }
       return {
         value: [{ text: `${p.done}/${p.total}`, color: usageColor(percent) }],
         meter: percent,
         below: p.current === undefined ? undefined : [{ text: p.current, color: C.text }],
+        rows,
       }
     }
     case 'git':

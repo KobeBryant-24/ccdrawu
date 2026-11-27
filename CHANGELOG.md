@@ -2,6 +2,12 @@
 
 Each release names the version of terminu design (tdp) it follows.
 
+## v1.4.3-cn.6 — tdp v1.3.5
+
+- The Plan row lists the session's tasks, not only how many are done: each takes a row under the bar, with a mark for its state — `✓` done, `◉` in progress, `○` waiting, `■` blocked, `–` skipped — and the one in progress says what it is doing. A task that is done or skipped counts as done, and is dimmed.
+- `/ccdrawu plan` switches the row between all the tasks and only the ones not done yet. The choice is kept between sessions.
+- An item may take rows of its own under it, for one that lists things.
+
 ## v1.4.3-cn.5 — tdp v1.3.5
 
 - A new row, Plan: this session's plan of tasks, as Claude Code writes it — one file per task in `<Claude Code's folder>/tasks/<session id>/`, each with its subject, its state and what it says while it is in progress. The row shows how many are done of how many there are, with a bar, and the task in progress under it. A task that is done or skipped counts as done.
