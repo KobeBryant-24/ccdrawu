@@ -169,11 +169,15 @@ function held(id: string, s: Snapshot): View | undefined {
       const p = s.plan
       if (p === null) return undefined
       const percent = p.total === 0 ? 0 : (p.done / p.total) * 100
-      const listed =
-        s.planMode === 'remaining' ? p.tasks.filter(t => t.status !== 'completed' && t.status !== 'skipped') : p.tasks
-      const rows = listed.slice(0, PLAN_MAX_ROWS).map(planRow)
-      if (listed.length > PLAN_MAX_ROWS) {
-        rows.push([{ text: `…还有 ${listed.length - PLAN_MAX_ROWS} 条`, color: C.surface }])
+      // Only the ones not done yet, or all of them; unfolded when the mode says so
+      const todo = p.tasks.filter(t => t.status !== 'completed' && t.status !== 'skipped')
+      const listed = s.planMode === 'remaining' ? todo : p.tasks
+      const shown = s.planMode === 'full' ? listed : listed.slice(0, PLAN_MAX_ROWS)
+      const rows = shown.map(planRow)
+      if (listed.length > shown.length) {
+        rows.push([
+          { text: `…还有 ${listed.length - shown.length} 条 · /ccdrawu plan more`, color: C.surface },
+        ])
       }
       return {
         value: [{ text: `${p.done}/${p.total}`, color: usageColor(percent) }],

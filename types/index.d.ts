@@ -65,8 +65,9 @@ export type PlanInfo = {
   tasks: PlanTask[]
 }
 
-// Which tasks the plan row lists: all of them, or only the ones not done yet
-export type PlanMode = 'all' | 'remaining'
+// Which tasks the plan row lists: all of them (folded past a dozen), only the ones not done yet, or
+// all of them unfolded
+export type PlanMode = 'all' | 'remaining' | 'full'
 
 export type VersionInfo = { current: string; latest?: string }
 

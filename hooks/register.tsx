@@ -537,7 +537,7 @@ async function refreshAgents($: Engine) {
 async function storedPlanMode($: Engine): Promise<PlanMode | undefined> {
   try {
     const v = await $.store.get(PLAN_MODE_KEY)
-    return v === 'all' || v === 'remaining' ? v : undefined
+    return v === 'all' || v === 'remaining' || v === 'full' ? v : undefined
   } catch {
     return undefined
   }
@@ -725,13 +725,21 @@ export const register: Register = (on, options) => {
       await petHears($, word)
       return {}
     }
-    if (word === 'plan') {
+    if (word === 'plan' || word === 'plan more') {
       // Not named next: the hook's own next is the continuation, and a binding of that name
       // inside it shadows it, which the host refuses to load the module for
-      const mode = (await read($, planMode)) === 'all' ? 'remaining' : 'all'
+      const current = await read($, planMode)
+      const mode: PlanMode =
+        word === 'plan more' ? 'full' : current === 'all' ? 'remaining' : current === 'remaining' ? 'full' : 'all'
       await update($, planMode, () => mode)
       await keepPlanMode($, mode)
-      await $.ui.toast(mode === 'all' ? '计划：显示全部任务' : '计划：只看未完成与进行中')
+      await $.ui.toast(
+        mode === 'all'
+          ? '计划：显示全部任务'
+          : mode === 'remaining'
+            ? '计划：只看未完成与进行中'
+            : '计划：显示全部，不折叠',
+      )
       return {}
     }
     // The drawer on or off for this session, wherever it sits, whatever the config has (drawerWanted). A

@@ -236,8 +236,18 @@ export type TaskFile = {
   status?: string
 }
 
+// The order the tasks are listed in: what is being worked on first, then what is waiting, then what
+// is done. Within a group they keep the order they were made in.
+const PLAN_STATUS_RANK: Record<string, number> = {
+  in_progress: 0,
+  blocked: 1,
+  pending: 2,
+  completed: 3,
+  skipped: 4,
+}
+
 // planFrom: the plan as the task files say it — how many are done, how many there are, the one in
-// progress (what it says while it is, else its subject), and every task in the order they were made.
+// progress (what it says while it is, else its subject), and every task, the ones still to do first.
 // A task that is done or skipped counts as done.
 export function planFrom(files: readonly TaskFile[]): {
   done: number
@@ -253,7 +263,10 @@ export function planFrom(files: readonly TaskFile[]): {
       activeForm: f.activeForm,
     }))
     .filter(t => t.subject !== '' || t.activeForm !== undefined)
-    .sort((a, b) => taskOrder(a.id) - taskOrder(b.id))
+    .sort(
+      (a, b) =>
+        statusRank(a.status) - statusRank(b.status) || taskOrder(a.id) - taskOrder(b.id),
+    )
   const done = tasks.filter(t => t.status === 'completed' || t.status === 'skipped').length
   const current = tasks.find(t => t.status === 'in_progress')
   return {
@@ -262,6 +275,12 @@ export function planFrom(files: readonly TaskFile[]): {
     current: current?.activeForm ?? current?.subject,
     tasks,
   }
+}
+
+// A task's state in the order the tasks are listed in; a state the drawer does not know goes last
+function statusRank(status: string): number {
+  const rank = PLAN_STATUS_RANK[status]
+  return rank === undefined ? PLAN_STATUS_RANK.skipped : rank
 }
 
 // A task's number as a number, for the order the tasks were made in; one without a number goes last
